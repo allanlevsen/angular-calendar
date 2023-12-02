@@ -1,0 +1,15 @@
+<div class="calendar">
+   <div class="week" *ngFor="let week of weeks">
+     <div class="day" *ngFor="let day of week">
+       <div *ngIf="day.isCurrentMonth; else disabledDay" class="date-value">
+         {{ day.day }}
+         <div class="value">{{ day.value }}</div>
+       </div>
+       <ng-template #disabledDay>
+         <div class="date-disabled"></div>
+       </ng-template>
+     </div>
+   </div>
+ </div>
+
+ 

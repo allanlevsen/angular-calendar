@@ -1,0 +1,39 @@
+.calendar {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: center;
+   max-width: 700px; /* Adjust based on your requirement */
+ }
+ 
+ .week {
+   display: flex;
+   justify-content: space-between;
+   width: 100%;
+ }
+ 
+ .day {
+   display: flex;
+   position: relative; /* Set position to relative for absolute positioning of day number */
+   border: 1px solid #ddd;
+   width: calc(100% / 7);
+   height: 100px;
+ }
+ 
+ .date-value {
+   position: absolute;
+   top: 5px; /* Position day number at the top */
+   left: 5px; /* Position day number at the left */
+   font-size: 12px; /* Small font size for the day number */
+   color: #333;
+ }
+ 
+ .value {
+   font-size: 36px; /* Large font size for the value */
+   color: teal;
+   margin-top: 20px; /* Push the value down to center it */
+ }
+ 
+ .date-disabled {
+   background-color: #f8f8f8;
+   border: 1px solid #eee;
+ }

@@ -66,9 +66,10 @@
    position: relative; /* needed for absolute positioning */
    border: 1px solid #ddd;
    width: calc(100% / 7);
-   height: 75px;
+   height: 85px;
    margin-left: 2px;
    margin-right: 2px;
+   transition: background-color 0.3s; /* Optional: adds a smooth transition for background color change */
  }
  
  .grey-day {
@@ -102,7 +103,7 @@
    font-size: 36px; /* Larger font size for the selected value */
    color: teal;
    position: absolute;
-   top: 50%;
+   top: 60%;
    left: 50%;
    transform: translate(-50%, -50%);
  }
@@ -117,4 +118,67 @@
    padding: 5px 10px;
    margin: 0 5px;
    cursor: pointer;
+ }
+
+
+ /* Popup list styling */
+ .options-btn {
+   /* Styling for the button that shows the options popup */
+   font-size: 10px;
+ }
+ 
+ .edit-btn {
+   position: absolute;
+   color: #bbb;
+   top: 5px;
+   right: 0px;
+   background: none;
+   border: none;
+   cursor: pointer;
+   font-size: 12px;
+ }
+
+ .options-popup {
+   position: absolute;
+   top: 22px; /* Adjust if necessary */
+   right: 5px; /* Align the right side of the popup */
+   width: 100px; /* Set a specific width for the popup */
+   /* max-width: 100%; Optional: ensure it doesn't exceed the viewport width */
+   background-color: white;
+   border: 1px solid #ddd;
+   z-index: 20;
+   box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Optional: adds a shadow for better visibility */
+   /* ... (rest of your popup styles) */
+ }
+ 
+ .option {
+   padding: 5px 10px;
+   cursor: pointer;
+   font-size: 12px;
+ }
+ 
+ .option:hover {
+   background-color: #f0f0f0;
+ }
+
+ .options-popup .option {
+   font-size: 10px; /* Adjust the font size as needed */
+   line-height: 1; /* Adjust line spacing as needed */
+   color: #333333; /* Set the text color */
+   background-color: #f8f8f8; /* Set the background color for each option */
+   padding: 5px 10px; /* Add some padding for better readability */
+ }
+ 
+ .options-popup .option:hover {
+   background-color: #e0e0e0; /* Change background color on hover for better interaction */
+ }
+ 
+ .overlay {
+   position: fixed;
+   top: 20px;
+   left: 75px;
+   width: 100%;
+   height: 100%;
+   background-color: rgba(0,0,0,0.5);
+   z-index: 5;
  }

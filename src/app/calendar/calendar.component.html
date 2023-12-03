@@ -1,28 +1,38 @@
 <div class="calendar-container">
    <div class="calendar-header">
-     {{ currentMonthName }} {{ year }}
-     <span class="navigation-buttons">
-      <button type="button" class="btn btn-secondary btn-sm cal-nav-button" (click)="goToPreviousMonth()">Previous</button>
-      <button type="button" class="btn btn-secondary btn-sm cal-nav-button" (click)="goToNextMonth()">Next</button>
-    </span>
+      {{ currentMonthName }} {{ year }}
+      <span class="navigation-buttons">
+         <button type="button" class="btn btn-secondary btn-sm cal-nav-button"
+            (click)="goToPreviousMonth()">Previous</button>
+         <button type="button" class="btn btn-secondary btn-sm cal-nav-button" (click)="goToNextMonth()">Next</button>
+      </span>
    </div>
    <div class="calendar-weekdays">
-     <div class="weekday" *ngFor="let day of ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']">{{ day }}</div>
+      <div class="weekday"
+         *ngFor="let day of ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']">{{ day }}
+      </div>
    </div>
 
-<div class="calendar">
-   <div class="week" *ngFor="let week of weeks">
-     <div class="day" *ngFor="let day of week">
-       <!-- This version won't show the leading days...
-         <span class="day-number" *ngIf="day.isCurrentMonth">{{ day.day }}</span> -->
-         <span *ngIf="day.day" class="day-number" [class.grey-day]="!day.isCurrentMonth">{{ day.day }}</span>
-         <select class="schedule-dropdown" *ngIf="day.isCurrentMonth" [(ngModel)]="day.value" (change)="onScheduleChange(day, $event.target)">
-            <option *ngFor="let option of scheduleOptions" [value]="option">{{ option }}</option>
-         </select>
-       <span class="value" *ngIf="day.isCurrentMonth">{{ day.value }}</span>
-       <div class="date-disabled" *ngIf="!day.isCurrentMonth"></div>
-     </div>
+   <div class="calendar">
+      <div class="week" *ngFor="let week of weeks">
+         <div class="day" *ngFor="let day of week" [ngStyle]="{'background-color': getDayBackgroundColor(day.day)}">
+            <span *ngIf="day.day" class="day-number" [class.grey-day]="!day.isCurrentMonth">{{ day.day }}</span>
+            <!-- <span class="day-number" *ngIf="day.isCurrentMonth">{{ day.day }}</span> -->
+            <button *ngIf="day.isCurrentMonth" class="edit-btn" (click)="showOptions(day)">
+               <i class="fas fa-edit"></i> <!-- Font Awesome edit icon -->
+            </button>
+            <div *ngIf="day === selectedDay" class="options-popup">
+               <div class="option" *ngFor="let option of scheduleOptions" (click)="selectOption(option)">
+                  {{ option.DisplayName }}
+               </div>
+            </div>
+            <!-- Display the value for each day -->
+            <span *ngIf="day.isCurrentMonth" class="value">
+               {{ getDayValue(day.day) }}
+            </span>
+            <div class="date-disabled" *ngIf="!day.isCurrentMonth"></div>
+         </div>
+      </div>
    </div>
- </div>
 
- </div>
+</div>

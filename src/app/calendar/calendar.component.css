@@ -2,38 +2,119 @@
    display: flex;
    flex-wrap: wrap;
    justify-content: center;
-   max-width: 700px; /* Adjust based on your requirement */
+   max-width: 700px;
  }
  
+ .calendar-container {
+   max-width: 600px;
+   margin: auto;
+ }
+ 
+ /* .calendar-header {
+   text-align: left;
+   font-size: 16px;
+   margin-bottom: 10px;
+ } */
+ .calendar-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 10px;
+   font-size: 16px;
+   margin-bottom: 10px;
+ }
+ 
+ .month-year {
+   flex-grow: 1;
+   text-align: left;
+   font-size: 24px;
+ }
+ 
+ .navigation-buttons {
+   flex-grow: 1;
+   text-align: right;
+ }
+ 
+ .navigate-btn {
+   padding: 5px 10px;
+   margin: 0 5px;
+   cursor: pointer;
+ }
+ 
+ .calendar-weekdays {
+   display: flex;
+   justify-content: space-between;
+ }
+ 
+ .weekday {
+   width: calc(100% / 7);
+   text-align: left ;
+   font-weight: 500;
+   font-size: 12px;
+   margin-left: 5px;
+ }
+
  .week {
    display: flex;
    justify-content: space-between;
    width: 100%;
+   margin-bottom: 4px;
  }
  
  .day {
    display: flex;
-   position: relative; /* Set position to relative for absolute positioning of day number */
+   position: relative; /* needed for absolute positioning */
    border: 1px solid #ddd;
    width: calc(100% / 7);
-   height: 100px;
+   height: 75px;
+   margin-left: 2px;
+   margin-right: 2px;
  }
  
+ .grey-day {
+   color: lightgrey;
+ }
+
  .date-value {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   height: 100%;
+   position: relative; /* needed for absolute positioning */
+ }
+ 
+ .day-number {
    position: absolute;
-   top: 5px; /* Position day number at the top */
-   left: 5px; /* Position day number at the left */
-   font-size: 12px; /* Small font size for the day number */
-   color: #333;
+   top: 5px;
+   left: 5px;
+   font-size: 12px;
+ }
+ 
+ .schedule-dropdown {
+   position: absolute;
+   top: 5px;
+   right: 5px;
+   font-size: 12px;
  }
  
  .value {
-   font-size: 36px; /* Large font size for the value */
+   font-size: 36px; /* Larger font size for the selected value */
    color: teal;
-   margin-top: 20px; /* Push the value down to center it */
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
  }
  
  .date-disabled {
    background-color: #f8f8f8;
-   border: 1px solid #eee;
+   /* border: 1px solid #eee; */
+   position: relative;
+ }
+
+ .cal-nav-button {
+   padding: 5px 10px;
+   margin: 0 5px;
+   cursor: pointer;
  }

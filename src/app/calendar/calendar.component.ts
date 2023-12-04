@@ -30,15 +30,15 @@ export class CalendarComponent implements OnInit {
   dayValues: DayValue[] = []; // This should be provided with the actual values
 
   scheduleOptions: ScheduleOption[] = [
-    { DisplayName: 'First Watch', DataValue: 'F', CategoryTypeColor: '#FFD700' },
-    { DisplayName: 'Second Watch', DataValue: 'S', CategoryTypeColor: '#FFD700' },
-    { DisplayName: 'Third Watch', DataValue: 'T', CategoryTypeColor: '#FFD700' },
-    { DisplayName: 'Day Off', DataValue: 'D', CategoryTypeColor: '#FFD700' },
-    { DisplayName: 'Holiday', DataValue: 'H', CategoryTypeColor: '#FFD700' },
-    { DisplayName: 'Course', DataValue: 'C', CategoryTypeColor: '#FFD700' },
-    { DisplayName: 'Maternity Leave', DataValue: 'M', CategoryTypeColor: '#FFD700' },
-    { DisplayName: 'Extended Leave', DataValue: 'L', CategoryTypeColor: '#FFD700' },
-    { DisplayName: 'Unavailable', DataValue: 'U', CategoryTypeColor: '#FFD700' }
+    { DisplayName: 'First Watch', DataValue: 'F', CategoryTypeColor: '#acc5ff' },
+    { DisplayName: 'Second Watch', DataValue: 'S', CategoryTypeColor: '#acc5ff' },
+    { DisplayName: 'Third Watch', DataValue: 'T', CategoryTypeColor: '#acc5ff' },
+    { DisplayName: 'Day Off', DataValue: 'D', CategoryTypeColor: '#f97a7a' },
+    { DisplayName: 'Holiday', DataValue: 'H', CategoryTypeColor: '#f9d77a' },
+    { DisplayName: 'Course', DataValue: 'C', CategoryTypeColor: '#7ae8f9' },
+    { DisplayName: 'Maternity Leave', DataValue: 'M', CategoryTypeColor: '#7af9d5' },
+    { DisplayName: 'Extended Leave', DataValue: 'L', CategoryTypeColor: '#b57af9' },
+    { DisplayName: 'Unavailable', DataValue: 'U', CategoryTypeColor: '#919191' }
   ];  
   
   monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -46,6 +46,10 @@ export class CalendarComponent implements OnInit {
 
   // Add a property to track the currently selected day for which the popup is being shown
   selectedDay: CalendarDay | null = null;
+  defaultackgroundColor: string = "#fefefe";
+
+  isReadOnly: boolean = false;
+  useBackgroundColors: boolean = true;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -121,6 +125,17 @@ export class CalendarComponent implements OnInit {
     return dayValue ? dayValue.value : null;
   }
 
+  getDayDisplayName(day: number): string | null {
+    const dayValue = this.getDayValue(day);
+    if (dayValue) {
+      const dayName = this.scheduleOptions.find(dn =>
+        dn.DataValue === dayValue);
+      return dayName ? dayName.DisplayName : null;
+    } else {
+      return null;
+    }
+  }
+
   onScheduleChange(day: CalendarDay, target: EventTarget | null): void {
     // Ensure that we have an HTMLSelectElement and that the day is part of the current month
     const selectElement = target as HTMLSelectElement;
@@ -141,29 +156,6 @@ export class CalendarComponent implements OnInit {
   showOptions(day: CalendarDay): void {
     this.selectedDay = day;
   }
-
-  // Method to select an option from the popup
-  // selectOption(value: string): void {
-  //   if (this.selectedDay && this.selectedDay.day) {
-  //     const updatedDayValues = [...this.dayValues]; // Create a new array
-  //     const dayIndex = updatedDayValues.findIndex(dv => 
-  //       dv.date.getDate() === this.selectedDay.day && 
-  //       dv.date.getMonth() + 1 === this.month && 
-  //       dv.date.getFullYear() === this.year
-  //     );
-      
-  //     const newDate = new Date(this.year, this.month - 1, this.selectedDay.day);
-  //     if (dayIndex !== -1) {
-  //       updatedDayValues[dayIndex] = { ...updatedDayValues[dayIndex], value: value };
-  //     } else {
-  //       updatedDayValues.push({ date: newDate, value: value });
-  //     }
-  
-  //     this.dayValues = updatedDayValues; // Assign the new array
-  //     this.selectedDay = null;
-  //     this.cdr.detectChanges();
-  //   }
-  // }
 
   selectOption(option: ScheduleOption): void {
     if (this.selectedDay) {
@@ -188,20 +180,33 @@ export class CalendarComponent implements OnInit {
   }
 
   getDayBackgroundColor(day: number): string {
-    const dayValue = this.dayValues.find(dv =>
-      dv.date.getDate() === day &&
-      dv.date.getMonth() + 1 === this.month &&
-      dv.date.getFullYear() === this.year
-    );
-    if (dayValue) {
-      const option = this.scheduleOptions.find(opt => opt.DataValue === dayValue.value);
-      return option ? option.CategoryTypeColor : 'default-color'; // Replace 'default-color' with your default color
+    if (this.useBackgroundColors) {
+      const dayValue = this.dayValues.find(dv =>
+        dv.date.getDate() === day &&
+        dv.date.getMonth() + 1 === this.month &&
+        dv.date.getFullYear() === this.year
+      );
+      if (dayValue) {
+        const option = this.scheduleOptions.find(opt => opt.DataValue === dayValue.value);
+        return option ? option.CategoryTypeColor : this.defaultackgroundColor;
+      }
     }
-    return 'default-color'; // Replace 'default-color' with your default color
+    return this.defaultackgroundColor;
   }
 
   // Method to hide the options popup
   hideOptions(): void {
     this.selectedDay = null;
   }
+
+  onReadOnlyChange(): void {
+    this.isReadOnly = !this.isReadOnly;
+    // Add logic to handle the read-only state
+  }
+
+  onUseBackgroundColorsChange(): void {
+    this.useBackgroundColors = !this.useBackgroundColors;
+    // Add logic to handle background color usage
+  }
+
 }

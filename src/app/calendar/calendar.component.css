@@ -62,6 +62,7 @@
  }
  
  .day {
+   border-color: #919191;
    display: flex;
    position: relative; /* needed for absolute positioning */
    border: 1px solid #ddd;
@@ -72,6 +73,11 @@
    transition: background-color 0.3s; /* Optional: adds a smooth transition for background color change */
  }
  
+ .default-color {
+   background-color: white;
+ }
+
+
  .grey-day {
    color: lightgrey;
  }
@@ -101,7 +107,7 @@
  
  .value {
    font-size: 36px; /* Larger font size for the selected value */
-   color: teal;
+   color: #3c44d0;
    position: absolute;
    top: 60%;
    left: 50%;
@@ -182,3 +188,15 @@
    background-color: rgba(0,0,0,0.5);
    z-index: 5;
  }
+
+ .calendar-controls {
+   margin-top: 20px;
+   text-align: left;
+   margin-left: 100px;
+ }
+ 
+ .calendar-controls label {
+   margin-right: 15px;
+   font-size: 16px;
+ }
+

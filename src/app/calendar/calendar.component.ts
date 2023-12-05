@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ChangeDetectorRef } from '@angular/core';
 
 interface DayValue {
   date: Date;
@@ -50,8 +49,6 @@ export class CalendarComponent implements OnInit {
 
   isReadOnly: boolean = false;
   useBackgroundColors: boolean = true;
-
-  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.updateMonthAndYear();
@@ -175,7 +172,6 @@ export class CalendarComponent implements OnInit {
       }
 
       this.selectedDay = null; // Hide the popup after selection
-      this.cdr.detectChanges();
     }
   }
 

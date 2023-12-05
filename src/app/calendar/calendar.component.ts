@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 
 interface DayValue {
   date: Date;
@@ -49,10 +49,21 @@ export class CalendarComponent implements OnInit {
 
   isReadOnly: boolean = false;
   useBackgroundColors: boolean = true;
+  popupChangeDetector: boolean = true;
+
+  // multiple day selecion capability
+  selectedDays: Set<CalendarDay> = new Set();
+  popupTop: string = '';
+  popupLeft: string = '';
+  @HostListener('document:keydown.escape', ['$event']) // Listen for the escape key
 
   ngOnInit() {
     this.updateMonthAndYear();
     this.generateCalendar();
+  }
+
+  onEscapeKey(event: KeyboardEvent): void {
+    this.hideOptions();
   }
 
   updateMonthAndYear(): void {
@@ -150,30 +161,82 @@ export class CalendarComponent implements OnInit {
 
   // popup select list
 
-  showOptions(day: CalendarDay): void {
-    this.selectedDay = day;
-  }
+  // showOptions(day: CalendarDay, event: MouseEvent): void {
+  //   event.preventDefault();
+  //   this.selectedDay = day;
+  // }
 
-  selectOption(option: ScheduleOption): void {
-    if (this.selectedDay) {
-      this.selectedDay.value = option.DataValue;
-      
-      // Update the dayValues array as well
-      const dayIndex = this.dayValues.findIndex(dv => 
-        dv.date.getDate() === this.selectedDay.day && 
-        dv.date.getMonth() + 1 === this.month && 
-        dv.date.getFullYear() === this.year
-      );
-      
-      if (dayIndex !== -1) {
-        this.dayValues[dayIndex].value = option.DataValue;
-      } else {
-        this.dayValues.push({ date: new Date(this.year, this.month - 1, this.selectedDay.day), value: option.DataValue });
-      }
+  showOptions(day: CalendarDay, event: MouseEvent): void {
+    event.preventDefault(); // Prevent default context menu
 
-      this.selectedDay = null; // Hide the popup after selection
+    // Show the popup without altering the existing selection
+    if (!this.selectedDays.has(day)) {
+      this.selectedDays.clear();
+      this.selectedDays.add(day);
     }
+    else {
+      const selectedDaysArray = Array.from(this.selectedDays);
+      if (selectedDaysArray.length === 0) {
+        this.selectedDay = null;
+        this.hideOptions();
+      } else {
+        this.selectedDay = selectedDaysArray[selectedDaysArray.length - 1];
+        this.popupChangeDetector = !this.popupChangeDetector;
+        this.popupChangeDetector = true;
+      }
+    }
+
+    // Calculate popup position
+    this.popupTop = event.clientY + 'px';
+    this.popupLeft = event.clientX + 'px';
   }
+
+  applySelectionToDays(option: ScheduleOption): void {
+    this.selectedDays.forEach(day => {
+      if (day) {
+        day.value = option.DataValue;
+        
+        // Update the dayValues array as well
+        const dayIndex = this.dayValues.findIndex(dv => 
+          dv.date.getDate() === this.selectedDay.day && 
+          dv.date.getMonth() + 1 === this.month && 
+          dv.date.getFullYear() === this.year
+        );
+        
+        if (dayIndex !== -1) {
+          this.dayValues[dayIndex].value = option.DataValue;
+        } else {
+          this.dayValues.push({ date: new Date(this.year, this.month - 1, day.day), value: option.DataValue });
+        }
+  
+      }
+    });
+
+    this.selectedDay = null; // Hide the popup after selection
+    this.hideOptions();
+    this.selectedDays.clear(); // Optionally clear the selection after applying
+  }
+
+  // selectOption(option: ScheduleOption): void {
+  //   if (this.selectedDay) {
+  //     this.selectedDay.value = option.DataValue;
+      
+  //     // Update the dayValues array as well
+  //     const dayIndex = this.dayValues.findIndex(dv => 
+  //       dv.date.getDate() === this.selectedDay.day && 
+  //       dv.date.getMonth() + 1 === this.month && 
+  //       dv.date.getFullYear() === this.year
+  //     );
+      
+  //     if (dayIndex !== -1) {
+  //       this.dayValues[dayIndex].value = option.DataValue;
+  //     } else {
+  //       this.dayValues.push({ date: new Date(this.year, this.month - 1, this.selectedDay.day), value: option.DataValue });
+  //     }
+
+  //     this.selectedDay = null; // Hide the popup after selection
+  //   }
+  // }
 
   getDayBackgroundColor(day: number): string {
     if (this.useBackgroundColors) {
@@ -192,7 +255,9 @@ export class CalendarComponent implements OnInit {
 
   // Method to hide the options popup
   hideOptions(): void {
+    this.popupChangeDetector = !this.popupChangeDetector;
     this.selectedDay = null;
+    this.popupChangeDetector = false;
   }
 
   onReadOnlyChange(): void {
@@ -203,6 +268,35 @@ export class CalendarComponent implements OnInit {
   onUseBackgroundColorsChange(): void {
     this.useBackgroundColors = !this.useBackgroundColors;
     // Add logic to handle background color usage
+  }
+
+
+  // Multiple day selection capability
+
+  handleDayClick(day: CalendarDay, event: MouseEvent): void {
+    if (event.shiftKey) {
+      // Shift-click behavior
+      if (this.selectedDays.has(day)) {
+        this.selectedDays.delete(day); // Deselect if already selected
+      } else {
+        this.selectedDays.add(day); // Select the day
+      }
+    } else {
+      // Normal click behavior
+      this.hideOptions();
+      this.selectedDays.clear();
+      this.selectedDays.add(day);
+    }
+
+    // Calculate and update popup position
+    this.popupTop = event.clientY + 'px';
+    this.popupLeft = event.clientX + 'px';
+  }
+
+
+
+  isDaySelected(day: CalendarDay): boolean {
+    return this.selectedDays.has(day);
   }
 
 }

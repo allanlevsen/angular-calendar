@@ -1,0 +1,31 @@
+.label-hint {
+	font-size: 13px; 
+	color: #777;
+	font-weight: 400;
+   padding-left: 10px;
+}
+
+.validation-error {
+   color: red;
+   margin-top: 5px;
+   margin-left: 5px;
+   font-size: 12px;
+   font-weight: 700;
+}
+
+.ng-invalid {
+   border-color: red;
+}
+
+/* When using Form-Floating, the field name hides a part
+   of the border... moving this over 1 px fixes it
+   this is visible when focus on the control and the label
+   moves up and to the left in a smaller font
+
+*/
+.form-floating > label
+{
+   left: 1px;
+}
+
+

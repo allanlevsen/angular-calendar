@@ -17,18 +17,15 @@
       <div class="week" *ngFor="let week of weeks">
          <div class="day" *ngFor="let day of week" 
             [class.selected]="isDaySelected(day)" 
+            (contextmenu)="showOptions(day, $event)"
             (click)="handleDayClick(day, $event)"
             [ngStyle]="{'background-color': getDayBackgroundColor(day.day)}">
             <span *ngIf="day.day" class="day-number" [class.grey-day]="!day.isCurrentMonth">{{ day.day }}</span>
+            
             <!-- <span class="day-number" *ngIf="day.isCurrentMonth">{{ day.day }}</span> -->
-            <button *ngIf="day.isCurrentMonth && !isReadOnly" class="edit-btn" (contextmenu)="showOptions(day, $event)">
+            <button *ngIf="day.isCurrentMonth && !isReadOnly" class="edit-btn">
                <i class="fas fa-edit"></i> <!-- Font Awesome edit icon -->
             </button>
-            <!-- <div *ngIf="day === selectedDay" class="options-popup">
-               <div class="option" *ngFor="let option of scheduleOptions" (click)="selectOption(option)">
-                  {{ option.DisplayName }}
-               </div>
-            </div> -->
 
             <!-- Display the value for each day -->
             <span *ngIf="day.isCurrentMonth" class="value" title="{{ getDayDisplayName(day.day) }}">

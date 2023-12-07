@@ -203,6 +203,7 @@ export class CalendarComponent implements OnInit {
           dv.date.getFullYear() === this.year
         );
         
+        
         if (dayIndex !== -1) {
           this.dayValues[dayIndex].value = option.DataValue;
         } else {

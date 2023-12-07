@@ -1,0 +1,124 @@
+<div class="container mt-5">
+   <form (ngSubmit)="onSubmit()" #officerForm="ngForm">
+      <div class="row g-3">
+         <!-- Officer Badge Number -->
+         <div class="form-floating col-md-6 ">
+            <input type="text" class="form-control" id="officerBadgeNumber" placeholder="Officer badge number" required>
+            <label for="officerBadgeNumber">Officer badge number</label>
+         </div>
+
+         <!-- Charging Agency Code -->
+         <div class="form-floating col-md-6 ">
+            <select class="form-select" id="chargingAgencyCode" required>
+               <option value="">Select</option>
+               <option value="">EPS - Edmonton Police Service</option>
+               <option value="">CPS - Calgary Police Service</option>
+               <!-- Additional options here -->
+            </select>
+            <label for="chargingAgencyCode">Charging agency code</label>
+         </div>
+
+         <div class="form-floating col-md-6">
+            <input type="text" class="form-control" id="lastName" 
+               required 
+               minlength="4"
+               ContainsString="Levsen"
+               placeholder="Last Name"
+               [(ngModel)]="model.lastName" name="lastName" #lastName="ngModel">
+            <label for="lastName">Name</label>
+            <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)" class="validation-error">
+               <div *ngIf="lastName.errors?.['required']">Name is required.</div>
+               <div *ngIf="lastName.errors?.['minlength']">
+                  Name must be at least 4 characters long.
+               </div>
+               <div *ngIf="lastName.errors?.['containsString']">
+                  Field must contain the string: {{ lastName.errors?.['containsString'].value }}
+               </div>
+            </div>
+            <!-- <div [hidden]="lastName.valid || lastName.pristine" class="alert alert-danger">
+               Last Name is required
+            </div> -->
+         </div>
+
+         <!-- First Name -->
+         <div class="form-floating col-md-6 ">
+            <input type="text" class="form-control" id="firstName" required [(ngModel)]="model.firstName"
+               name="firstName" #firstName="ngModel" placeholder="First Name">
+            <label for="firstName">First Name</label>
+            <div [hidden]="firstName.valid || firstName.pristine" class="alert alert-danger">
+               First Name is required
+            </div>
+         </div>
+
+         <!-- Middle Name -->
+         <div class="form-floating col-md-6 ">
+            <input type="text" class="form-control" id="middleName" placeholder="Middle name">
+            <label for="middleName">Middle name</label>
+         </div>
+
+         <!-- Special Indicator -->
+         <div class="form-floating col-md-6 ">
+            <input type="text" class="form-control" id="specialIndicator" placeholder="Special indicator">
+            <label for="specialIndicator">Special indicator</label>
+         </div>
+
+         <!-- Title -->
+         <div class="form-floating col-md-6 ">
+            <input type="text" class="form-control" id="title" placeholder="Title" required>
+            <label for="title">Title</label>
+         </div>
+
+         <!-- Officer District -->
+         <div class="form-floating col-md-6 ">
+            <input type="text" class="form-control" id="officerDistrict" placeholder="Officer district">
+            <label for="officerDistrict">Officer district</label>
+         </div>
+
+         <!-- Unit -->
+         <div class="form-floating col-md-6 ">
+            <input type="text" class="form-control" id="unit" placeholder="Unit">
+            <label for="unit">Unit</label>
+         </div>
+
+         <!-- Supervisor Badge Number -->
+         <div class="form-floating col-md-6 ">
+            <input type="text" class="form-control" id="supervisorBadgeNumber" placeholder="Supervisor badge number">
+            <label for="supervisorBadgeNumber">Supervisor badge number</label>
+         </div>
+
+
+         <!-- Phone Number -->
+         <div class="form-floating col-md-6 ">
+            <input type="tel" class="form-control" id="phoneNumber" placeholder="Phone number"
+               pattern="^\+?[1-9]\d{1,14}$" title="Phone number must be in international format (e.g., +1234567890)"
+               required>
+            <label for="phoneNumber">Phone number</label>
+         </div>
+
+         <!-- Extension Number -->
+         <div class="form-floating col-md-6 ">
+            <input type="text" class="form-control" id="extensionNumber" placeholder="Extension number">
+            <label for="extensionNumber">Extension number</label>
+         </div>
+
+         <!-- Effective Date -->
+         <div class="form-floating col-md-6 ">
+            <input type="date" class="form-control" id="effectiveDate" placeholder="Effective date" required>
+            <label for="effectiveDate">Effective date</label>
+         </div>
+
+         <!-- Expiry Date -->
+         <div class="form-floating col-md-6 ">
+            <input type="date" class="form-control" id="expiryDate" placeholder="Expiry date" required>
+            <label for="expiryDate">Expiry date</label>
+         </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+
+      <br>
+      <div>
+         <hr>
+         Name via form.controls = {{showFormControls(officerForm)}}
+      </div>
+   </form>
+</div>

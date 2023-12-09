@@ -1,0 +1,109 @@
+<div class="container my-4">
+   <form (ngSubmit)="onSubmit()" #officerForm="ngForm">
+      <div class="row">
+         <div class="col-md-2 mb-3">
+            <label for="agencyCode" class="form-label">Agency</label>
+            <select class="form-select" id="agencyCode" 
+               required 
+               name="agency"
+               placeholder="Agency"
+               [(ngModel)]="newOfficer.agency" >
+               <option selected value="">Select agency</option>
+               <option selected value="EPS">EPS - Edmonton Police Agency</option>
+               <option selected value="CPS">CPS - Calgary Police Agency</option>
+            </select>
+         </div>
+         <div class="col-md-2 mb-3">
+            <label for="badgeNumber" class="form-label">Badge number</label>
+            <input type="text" class="form-control" id="badgeNumber" 
+               required 
+               minlength="10"
+               name="badge"
+               placeholder="Badge Number"
+               [(ngModel)]="newOfficer.badgeNumber" name="badgeNumber" #badgeNumber="ngModel">
+         </div>
+         <div class="col-md-2 mb-3">
+            <label for="fromDate" class="form-label">Start date</label>
+            <input type="date" class="form-control" id="fromDate" 
+            required
+            placeholder=""
+            name="fromDate"
+            [(ngModel)]="newOfficer.startDate">
+         </div>
+         <div class="col-md-2 mb-3">
+            <label for="toDate" class="form-label">End date</label>
+            <input type="date" class="form-control" id="toDate" 
+            required
+            placeholder=""
+            name="toDate"
+            [(ngModel)]="newOfficer.endDate">
+         </div>
+         <div class="col-md-2 mb-3">
+            <label for="leaveType" class="form-label">Type of leave</label>
+            <select class="form-select" id="leaveType" required name="leave">
+               <option selected value="">Select</option>
+               <option value="{{option.DataValue}}" *ngFor="let option of scheduleOptions">{{option.DisplayName}}</option>
+            </select>
+         </div>
+         <div class="col-md-2  mb-3 align-self-end">
+            <button type="submit" class="btn btn-primary">Add officer</button>
+         </div>
+      </div>
+   </form>
+</div>
+
+<div class="container my-4">
+   <table class="table table-hover">
+      <!-- Header Row -->
+      <thead class="thead-dark">
+         <tr>
+            <th scope="col">Officer Name</th>
+            <th scope="col">Agency</th>
+            <th scope="col">Badge Number</th>
+            <th scope="col">Leave Name</th>
+            <th scope="col">Start Date</th>
+            <th scope="col">End Date</th>
+            <th scope="col" colspan="4">Actions</th>
+         </tr>
+      </thead>
+
+      <!-- Data Rows -->
+      <tbody>
+         <ng-container *ngFor="let officer of officers">
+            <!-- If officer has leaves -->
+            <ng-container *ngFor="let leave of officer.leaves; let isFirst = first; ; let last = last">
+               <tr>
+                  <td *ngIf="isFirst; else emptyCell">{{ officer.lastName }}, {{ officer.firstName }}</td>
+                  <td *ngIf="isFirst; else emptyCell">{{ officer.agency }}</td>
+                  <td *ngIf="isFirst; else emptyCell">{{ officer.badgeNumber }}</td>
+                  <td>{{ leave.leaveName }}</td>
+                  <td>{{ leave.startDate | date }}</td>
+                  <td>{{ leave.endDate | date }}</td>
+                  <td class="action-icon"><i class="fa fa-edit" title="Edit Leave"></i></td>
+                  <td class="action-icon"><i class="fa fa-plus" *ngIf="last" title="Add Leave"></i></td>
+                  <td class="action-icon"><i class="fa fa-minus" title="Remove Leave"></i></td>
+                  <td class="action-icon"><i *ngIf="isFirst" class="fa fa-trash" title="Delete Officer"></i></td>
+               </tr>
+            </ng-container>
+
+            <!-- If officer has no leaves -->
+            <tr *ngIf="officer.leaves.length === 0">
+               <td>{{ officer.lastName }}, {{ officer.firstName }}</td>
+               <td>{{ officer.badgeNumber }}</td>
+               <td>{{ officer.agency }}</td>
+               <td></td>
+               <td></td>
+               <td></td>
+               <td class="action-icon"></td>
+               <td class="action-icon"><i class="fa fa-plus" title="Add Leave"></i></td>
+               <td class="action-icon"></td>
+               <td class="action-icon"><i class="fa fa-trash" title="Delete Officer"></i></td>
+            </tr>
+         </ng-container>
+      </tbody>
+   </table>
+</div>
+
+<ng-template #emptyCell>
+   <td></td>
+</ng-template>

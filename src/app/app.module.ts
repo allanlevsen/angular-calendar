@@ -7,12 +7,14 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { FormsModule } from '@angular/forms';
 import { OfficerScheduleComponent } from './officer-schedule/officer-schedule.component';
 import { ContainsStringDirective } from './shared/directives/custom-validators/contains-string.directive';
+import { OfficerBulkEntryComponent } from './officer-bulk-entry/officer-bulk-entry.component';
 @NgModule({
   declarations: [
     AppComponent,
     CalendarComponent,
     OfficerScheduleComponent,
-    ContainsStringDirective
+    ContainsStringDirective,
+    OfficerBulkEntryComponent
   ],
   imports: [
     BrowserModule,

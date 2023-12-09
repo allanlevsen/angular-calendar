@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Leave, Officer, OfficerForm } from '../models/officer.model';
+import { SchedulingService } from '../shared/services/scheduling.service';
 
 interface ScheduleOption {
   DisplayName: string;
@@ -36,10 +37,11 @@ export class OfficerBulkEntryComponent {
     { DisplayName: 'Extended Leave', DataValue: 'L', CategoryTypeColor: '#b57af9' },
     { DisplayName: 'Unavailable', DataValue: 'U', CategoryTypeColor: '#919191' }
   ];  
-  
 
   officerForm: OfficerForm = new OfficerForm();
   submitted = false;
+
+  constructor(private schedulingService: SchedulingService) {}
 
   onSubmit() { 
     this.submitted = true; 
@@ -48,9 +50,7 @@ export class OfficerBulkEntryComponent {
   }
 
   createNewOfficer(officerForm: OfficerForm) : Officer {
-    let newOfficer = new Officer(0, officerForm.agency, officerForm.badgeNumber, '', '', []);
-    let newLeave = new Leave(0, officerForm.startDate, officerForm.endDate, '', officerForm.leaveType);
-    newOfficer.leaves.push(newLeave);
+    let newOfficer = this.schedulingService.addOfficerSchedule(officerForm);
     this.officers.push(newOfficer);
 
     return newOfficer;

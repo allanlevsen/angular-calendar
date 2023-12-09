@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { OfficerScheduleComponent } from './officer-schedule/officer-schedule.component';
 import { ContainsStringDirective } from './shared/directives/custom-validators/contains-string.directive';
 import { OfficerBulkEntryComponent } from './officer-bulk-entry/officer-bulk-entry.component';
+import { SchedulingService } from './shared/services/scheduling.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,7 +22,9 @@ import { OfficerBulkEntryComponent } from './officer-bulk-entry/officer-bulk-ent
     AppRoutingModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    SchedulingService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

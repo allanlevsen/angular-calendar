@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Leave, Officer } from '../models/officer.model';
+import { Leave, Officer, OfficerForm } from '../models/officer.model';
 
 interface ScheduleOption {
   DisplayName: string;
@@ -38,19 +38,20 @@ export class OfficerBulkEntryComponent {
   ];  
   
 
-  newOfficer: Officer = new Officer(0, "", "", "", "", []);
+  officerForm: OfficerForm = new OfficerForm();
   submitted = false;
 
   onSubmit() { 
     this.submitted = true; 
-    console.log(this.createNewOfficer(this.newOfficer));
+    let officer = this.createNewOfficer(this.officerForm);
+    console.log(officer);
   }
 
-  createNewOfficer(officer: Officer) : Officer {
-    let newOfficer = new Officer(0, officer.agency, officer.badgeNumber, '', '', new Leave[1]);
-    newOfficer.leaves.push(
-      new Leave(0, officer.leaves[0].startDate, officer.leaves[0].endDate, officer.leaves[0].leaveCode, '')
-    )
+  createNewOfficer(officerForm: OfficerForm) : Officer {
+    let newOfficer = new Officer(0, officerForm.agency, officerForm.badgeNumber, '', '', []);
+    let newLeave = new Leave(0, officerForm.startDate, officerForm.endDate, '', officerForm.leaveType);
+    newOfficer.leaves.push(newLeave);
+    this.officers.push(newOfficer);
 
     return newOfficer;
   }

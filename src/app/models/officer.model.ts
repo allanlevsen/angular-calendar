@@ -11,9 +11,6 @@ export class Leave {
 
 export class Officer {
 
-  public startDate: Date;
-  public endDate: Date;
-  
    constructor(
      public id: number,
      public agency: string,
@@ -23,4 +20,14 @@ export class Officer {
      public leaves: Leave[]
    ) {  }
  
+ }
+
+ export class OfficerForm {
+
+  public agency: string;
+  public badgeNumber: string;
+  public startDate: Date;
+  public endDate: Date;
+  public leaveType: string;
+  
  }

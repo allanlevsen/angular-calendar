@@ -1,5 +1,5 @@
 <div class="container my-4">
-   <form (ngSubmit)="onSubmit()" #officerForm="ngForm">
+   <form (ngSubmit)="onSubmit()" #newOfficerForm="ngForm">
       <div class="row">
          <div class="col-md-2 mb-3">
             <label for="agencyCode" class="form-label">Agency</label>
@@ -7,7 +7,7 @@
                required 
                name="agency"
                placeholder="Agency"
-               [(ngModel)]="newOfficer.agency" >
+               [(ngModel)]="officerForm.agency" >
                <option selected value="">Select agency</option>
                <option selected value="EPS">EPS - Edmonton Police Agency</option>
                <option selected value="CPS">CPS - Calgary Police Agency</option>
@@ -20,7 +20,7 @@
                minlength="10"
                name="badge"
                placeholder="Badge Number"
-               [(ngModel)]="newOfficer.badgeNumber" name="badgeNumber" #badgeNumber="ngModel">
+               [(ngModel)]="officerForm.badgeNumber" name="badgeNumber" #badgeNumber="ngModel">
          </div>
          <div class="col-md-2 mb-3">
             <label for="fromDate" class="form-label">Start date</label>
@@ -28,7 +28,7 @@
             required
             placeholder=""
             name="fromDate"
-            [(ngModel)]="newOfficer.startDate">
+            [(ngModel)]="officerForm.startDate">
          </div>
          <div class="col-md-2 mb-3">
             <label for="toDate" class="form-label">End date</label>
@@ -36,13 +36,14 @@
             required
             placeholder=""
             name="toDate"
-            [(ngModel)]="newOfficer.endDate">
+            [(ngModel)]="officerForm.endDate">
          </div>
          <div class="col-md-2 mb-3">
             <label for="leaveType" class="form-label">Type of leave</label>
-            <select class="form-select" id="leaveType" required name="leave">
+            <select class="form-select" id="leaveType" required name="leave"
+               [(ngModel)]="officerForm.leaveType">
                <option selected value="">Select</option>
-               <option value="{{option.DataValue}}" *ngFor="let option of scheduleOptions">{{option.DisplayName}}</option>
+               <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">{{option.DisplayName}}</option>
             </select>
          </div>
          <div class="col-md-2  mb-3 align-self-end">

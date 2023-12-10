@@ -15,6 +15,8 @@ interface ScheduleOption {
 })
 export class OfficerBulkEntryComponent {
 
+  // various types, constants, array data
+  //
   officers: Officer[] = [
     new Officer(1, "Agency1", "BN001", "John", "Doe", []),
     new Officer(2, "Agency2", "BN002", "Jane", "Smith", [
@@ -38,10 +40,25 @@ export class OfficerBulkEntryComponent {
     { DisplayName: 'Unavailable', DataValue: 'U', CategoryTypeColor: '#919191' }
   ];  
 
+  // add officer form related variables
+  //
   officerForm: OfficerForm = new OfficerForm();
   submitted = false;
 
+  // Inline Leave variables
+  //
+  activeOfficerIndex: number | null = null;
+  editingLeave: Leave | null = null;
+  editingOfficerId: number | null = null;
+  editingLeaveIndex: number | null = null;
+  
   constructor(private schedulingService: SchedulingService) {}
+
+
+  ////////////////////////////////////////////////////////////
+  //
+  // UI Events
+  //
 
   onSubmit() { 
     this.submitted = true; 
@@ -49,11 +66,110 @@ export class OfficerBulkEntryComponent {
     console.log(officer);
   }
 
-  createNewOfficer(officerForm: OfficerForm) : Officer {
-    let newOfficer = this.schedulingService.addOfficerSchedule(officerForm);
-    this.officers.push(newOfficer);
+  // This would be bound to the click event of the trash can icon in your template
+  onDeleteClick(officerId: number): void {
+    this.deleteOfficerById(officerId);
+  }
 
-    return newOfficer;
+  showAddLeaveForm(index: number): void {
+    this.activeOfficerIndex = index;
+  }
+
+  isEditing(officerId: number, leaveIndex: number): boolean {
+    return this.editingOfficerId === officerId && this.editingLeaveIndex === leaveIndex;
+  }
+
+  editLeave(officerId: number, leaveIndex: number, leave: Leave): void {
+     
+    this.editingOfficerId = officerId;
+    this.editingLeaveIndex = leaveIndex;
+    this.editingLeave = { ...leave };
+  }
+
+  updateLeave(formValue: any, officerId: number, leaveIndex: number, event: Event): void {
+    event.preventDefault();
+    // Validate formValue and update the leave
+    const officer = this.officers.find(o => o.id === officerId);
+    if (officer && officer.leaves[leaveIndex]) {
+      officer.leaves[leaveIndex] = { ...formValue };
+    }
+    this.cancelEdit(); // Reset editing state
+  }
+
+  cancelEdit(): void {
+    this.editingOfficerId = null;
+    this.editingLeaveIndex = null;
+    this.editingLeave = null;
+  }
+
+  ////////////////////////////////////////////////////////////
+  //
+  // UI related functions
+  //
+
+  addOfficerToList(officer: Officer)
+  {
+    this.officers.push(officer);
+  }
+
+  deleteOfficerById(officerId: number): void {
+    // Find the index of the officer with the given ID
+    const index = this.officers.findIndex(officer => officer.id === officerId);
+
+    // If the officer is found
+    if (index > -1) {
+      // Remove the officer from the array
+      this.officers.splice(index, 1);
+    }
+  }
+
+  addLeave(formValue: any, officerId: number, event: Event): void {
+    event.preventDefault(); 
+    const newLeave = new Leave(
+      formValue.Id = this.schedulingService.getSecondsSince6AM(),
+      formValue.startDate,
+      formValue.endDate,
+      formValue.leaveType.toUpperCase(),
+      formValue.leaveType
+    );
+    const officer = this.officers.find(o => o.id === officerId);
+    if (officer) {
+      officer.leaves.push(newLeave);
+    }
+    this.activeOfficerIndex = null; // Hide the form after adding the leave
+  }
+
+  cancelAddLeave(): void {
+    this.activeOfficerIndex = null; // Hide the form
+  }
+  
+  removeLeave(officerId: number, leaveIndex: number): void {
+    // Find the officer
+    const officer = this.officers.find(o => o.id === officerId);
+  
+    // If the officer is found and the leave index is valid
+    if (officer && leaveIndex > -1 && officer.leaves && officer.leaves.length > leaveIndex) {
+      // Remove the leave from the officer's leaves array
+      officer.leaves.splice(leaveIndex, 1);
+    }
+  
+    // You might want to handle any updates or refreshes here
+  } 
+
+  ////////////////////////////////////////////////////////////
+  //
+  // Database related functions
+  //
+
+  createNewOfficer(officerForm: OfficerForm) : Officer {
+    this.schedulingService
+        .addOfficerSchedule(officerForm)
+        .subscribe( o => {
+          this.addOfficerToList(o);
+          return o;
+        });
+
+    return null;
   }
 
 

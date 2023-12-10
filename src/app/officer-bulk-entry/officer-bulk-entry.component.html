@@ -70,9 +70,9 @@
 
       <!-- Data Rows -->
       <tbody>
-         <ng-container *ngFor="let officer of officers">
+         <ng-container *ngFor="let officer of officers; let officerIndex = index">
             <!-- If officer has leaves -->
-            <ng-container *ngFor="let leave of officer.leaves; let isFirst = first; ; let last = last">
+            <ng-container *ngFor="let leave of officer.leaves; let isFirst = first; ; let last = last; let leaveIndex = index">
                <tr>
                   <td *ngIf="isFirst; else emptyCell">{{ officer.lastName }}, {{ officer.firstName }}</td>
                   <td *ngIf="isFirst; else emptyCell">{{ officer.agency }}</td>
@@ -80,11 +80,29 @@
                   <td>{{ leave.leaveName }}</td>
                   <td>{{ leave.startDate | date }}</td>
                   <td>{{ leave.endDate | date }}</td>
-                  <td class="action-icon"><i class="fa fa-edit" title="Edit Leave"></i></td>
-                  <td class="action-icon"><i class="fa fa-plus" *ngIf="last" title="Add Leave"></i></td>
-                  <td class="action-icon"><i class="fa fa-minus" title="Remove Leave"></i></td>
-                  <td class="action-icon"><i *ngIf="isFirst" class="fa fa-trash" title="Delete Officer"></i></td>
+                  <td class="action-icon"><i class="fa fa-edit" title="Edit Leave" (click)="editLeave(officer.id, leaveIndex, leave)"></i></td>
+                  <td class="action-icon"><i class="fa fa-plus" *ngIf="isFirst" title="Add Leave" (click)="showAddLeaveForm(officerIndex)"></i></td>
+                  <td class="action-icon"><i class="fa fa-minus" title="Remove Leave" (click)="removeLeave(officer.id, leaveIndex)"></i></td>
+                  <td class="action-icon"><i *ngIf="isFirst" class="fa fa-trash" title="Delete Officer" (click)="onDeleteClick(officer.id)"></i></td>
                </tr>
+
+               <!-- Inline edit form for a leave -->
+               <tr *ngIf="isEditing(officer.id, leaveIndex)">
+                  <td colspan="the number of columns to span">
+                  <form #editLeaveForm="ngForm">
+                     <input type="date" name="startDate" [(ngModel)]="editingLeave.startDate" required>
+                     <input type="date" name="endDate" [(ngModel)]="editingLeave.endDate" required>
+                     
+                     <select name="leaveType" [(ngModel)]="editingLeave.leaveName" required>
+                        <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">{{option.DisplayName}}</option>
+                     </select>
+
+                     <button (click)="updateLeave(editLeaveForm.value, officer.id, leaveIndex, $event)">Save</button>
+                     <button (click)="cancelEdit()">Cancel</button>
+                  </form>
+                  </td>
+               </tr>
+
             </ng-container>
 
             <!-- If officer has no leaves -->
@@ -96,10 +114,28 @@
                <td></td>
                <td></td>
                <td class="action-icon"></td>
-               <td class="action-icon"><i class="fa fa-plus" title="Add Leave"></i></td>
+               <td class="action-icon"><i class="fa fa-plus" title="Add Leave" (click)="showAddLeaveForm(officerIndex)"></i></td>
                <td class="action-icon"></td>
-               <td class="action-icon"><i class="fa fa-trash" title="Delete Officer"></i></td>
+               <td class="action-icon"><i class="fa fa-trash" title="Delete Officer" (click)="onDeleteClick(officer.id)"></i></td>
             </tr>
+
+            <!-- Inline form for adding a new leave -->
+            <tr *ngIf="activeOfficerIndex === officerIndex">
+               <td colspan="the number of columns to span">
+               <form #addLeaveForm="ngForm">
+                  <input type="date" name="startDate" ngModel required>
+                  <input type="date" name="endDate" ngModel required>
+                  <select name="leaveType" ngModel required>
+                     <option selected value="">Select</option>
+                     <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">{{option.DisplayName}}</option>
+                  </select>
+                  <button (click)="addLeave(addLeaveForm.value, officer.id, $event)">Update</button>
+                  <button (click)="cancelAddLeave()">Cancel</button>
+               </form>
+               </td>
+            </tr>
+
+            
          </ng-container>
       </tbody>
    </table>

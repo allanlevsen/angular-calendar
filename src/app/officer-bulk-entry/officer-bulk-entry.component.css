@@ -4,3 +4,39 @@
    min-width: 20px;
    max-width: 20px;
 }
+
+.add-edit-row {
+   background-color: #e2fede;
+}
+
+.column-leave-type {
+   min-width: 150px;
+   max-width: 150px;
+}
+
+.column-edit-leave-type {
+   min-width: 150px;
+   max-width: 150px;
+}
+
+.column-start-date {
+   min-width: 155px;
+   max-width: 155px;
+}
+
+.column-edit-start-date {
+   min-width: 155px;
+   max-width: 155px;
+   padding-left: 15px;
+}
+
+.column-end-date {
+   min-width: 150px;
+   max-width: 150px;
+}
+
+.column-edit-end-date {
+   min-width: 150px;
+   max-width: 150px;
+   padding-left: 30px;
+}

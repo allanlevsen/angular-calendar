@@ -90,10 +90,9 @@
                <tr *ngIf="isEditing(officer.id, leaveIndex)">
                   <td colspan="the number of columns to span">
                   <form #editLeaveForm="ngForm">
-                     <input type="date" name="startDate" [(ngModel)]="editingLeave.startDate" required>
-                     <input type="date" name="endDate" [(ngModel)]="editingLeave.endDate" required>
-                     
-                     <select name="leaveType" [(ngModel)]="editingLeave.leaveName" required>
+                     <input type="date" name="startDate" [ngModel]="editingStartDate" required>
+                     <input type="date" name="endDate" [ngModel]="editingEndDate" required>                     
+                     <select name="leaveName" [(ngModel)]="editingLeave.leaveName" required>
                         <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">{{option.DisplayName}}</option>
                      </select>
 

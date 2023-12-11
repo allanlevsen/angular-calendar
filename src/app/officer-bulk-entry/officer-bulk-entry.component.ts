@@ -8,6 +8,8 @@ interface ScheduleOption {
   CategoryTypeColor: string;
 }
 
+
+
 @Component({
   selector: 'officer-bulk-entry',
   templateUrl: './officer-bulk-entry.component.html',
@@ -15,16 +17,18 @@ interface ScheduleOption {
 })
 export class OfficerBulkEntryComponent {
 
+
+  
   // various types, constants, array data
   //
   officers: Officer[] = [
     new Officer(1, "Agency1", "BN001", "John", "Doe", []),
     new Officer(2, "Agency2", "BN002", "Jane", "Smith", [
-      new Leave(2, new Date("2023-01-01"), new Date("2023-01-10"), "LC001", "Annual Leave")
+      new Leave(2, new Date("2023-01-01"), new Date("2023-01-10"), "F", "First Watch")
     ]),
     new Officer(3, "Agency3", "BN003", "Alice", "Johnson", [
-      new Leave(3, new Date("2023-02-01"), new Date("2023-02-05"), "LC002", "Sick Leave"),
-      new Leave(3, new Date("2023-03-01"), new Date("2023-03-10"), "LC003", "Casual Leave")
+      new Leave(3, new Date("2023-02-01"), new Date("2023-02-05"), "S", "Second Watch"),
+      new Leave(3, new Date("2023-03-01"), new Date("2023-03-10"), "H", "Holiday")
     ])
   ];
 
@@ -49,6 +53,8 @@ export class OfficerBulkEntryComponent {
   //
   activeOfficerIndex: number | null = null;
   editingLeave: Leave | null = null;
+  editingStartDate: string | null = null;
+  editingEndDate: string | null = null;
   editingOfficerId: number | null = null;
   editingLeaveIndex: number | null = null;
   
@@ -80,18 +86,23 @@ export class OfficerBulkEntryComponent {
   }
 
   editLeave(officerId: number, leaveIndex: number, leave: Leave): void {
-     
     this.editingOfficerId = officerId;
     this.editingLeaveIndex = leaveIndex;
     this.editingLeave = { ...leave };
+    this.editingStartDate = this.formatDate(leave.startDate);
+    this.editingEndDate = this.formatDate(leave.endDate);
   }
 
+  formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
   updateLeave(formValue: any, officerId: number, leaveIndex: number, event: Event): void {
     event.preventDefault();
     // Validate formValue and update the leave
     const officer = this.officers.find(o => o.id === officerId);
     if (officer && officer.leaves[leaveIndex]) {
       officer.leaves[leaveIndex] = { ...formValue };
+      //officer.leaves[leaveIndex].leaveName = formValue.leaveName
     }
     this.cancelEdit(); // Reset editing state
   }

@@ -80,11 +80,11 @@
                </tr>
 
                <!-- Inline edit form for a leave -->
-               <tr class="add-edit-row" *ngIf="isEditing(officer.id, leaveIndex)">
+               <tr *ngIf="isEditing(officer.id, leaveIndex)" class="add-edit-row">
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td colspan="3">
+                  <td colspan="3" class="add-edit-row">
                      <form #editLeaveForm="ngForm">
                         <ng-container>
                            <tr>

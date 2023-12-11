@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Leave, Officer, OfficerForm } from '../models/officer.model';
+import { Leave, LeaveForm, Officer, OfficerForm } from '../models/officer.model';
 import { SchedulingService } from '../shared/services/scheduling.service';
 
 interface ScheduleOption {
@@ -52,9 +52,9 @@ export class OfficerBulkEntryComponent {
   // Inline Leave variables
   //
   activeOfficerIndex: number | null = null;
-  editingLeave: Leave | null = null;
-  editingStartDate: string | null = null;
-  editingEndDate: string | null = null;
+  editingLeave: LeaveForm | null = null;
+  //editingStartDate: string | null = null;
+  //editingEndDate: string | null = null;
   editingOfficerId: number | null = null;
   editingLeaveIndex: number | null = null;
   
@@ -79,30 +79,47 @@ export class OfficerBulkEntryComponent {
 
   showAddLeaveForm(index: number): void {
     this.activeOfficerIndex = index;
+    this.editingLeave = new LeaveForm();
   }
 
   isEditing(officerId: number, leaveIndex: number): boolean {
     return this.editingOfficerId === officerId && this.editingLeaveIndex === leaveIndex;
   }
 
+  getLeaveEditingForm(): LeaveForm {
+    if (this.editingLeave === null) {
+      this.editingLeave = new LeaveForm();
+    }
+
+    return this.editingLeave;
+  }
+
+  clearLeaveEditingForm() {
+    if (this.editingLeave != null) {
+      this.editingLeave = null;
+    }
+  }
+
   editLeave(officerId: number, leaveIndex: number, leave: Leave): void {
     this.editingOfficerId = officerId;
     this.editingLeaveIndex = leaveIndex;
-    this.editingLeave = { ...leave };
-    this.editingStartDate = this.formatDate(leave.startDate);
-    this.editingEndDate = this.formatDate(leave.endDate);
+    this.editingLeave = this.getLeaveEditingForm();
+    this.editingLeave.leaveName = leave.leaveName;
+    this.editingLeave.startDate = this.formatDate(leave.startDate);
+    this.editingLeave.endDate = this.formatDate(leave.endDate);
   }
 
   formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
   }
-  updateLeave(formValue: any, officerId: number, leaveIndex: number, event: Event): void {
+
+  updateLeave(officerId: number, leaveIndex: number, event: Event): void {
     event.preventDefault();
-    // Validate formValue and update the leave
     const officer = this.officers.find(o => o.id === officerId);
     if (officer && officer.leaves[leaveIndex]) {
-      officer.leaves[leaveIndex] = { ...formValue };
-      //officer.leaves[leaveIndex].leaveName = formValue.leaveName
+      officer.leaves[leaveIndex].leaveName = this.editingLeave.leaveName
+      officer.leaves[leaveIndex].startDate = new Date(this.editingLeave.startDate);
+      officer.leaves[leaveIndex].endDate = new Date(this.editingLeave.endDate);
     }
     this.cancelEdit(); // Reset editing state
   }
@@ -110,7 +127,7 @@ export class OfficerBulkEntryComponent {
   cancelEdit(): void {
     this.editingOfficerId = null;
     this.editingLeaveIndex = null;
-    this.editingLeave = null;
+    this.clearLeaveEditingForm();
   }
 
   ////////////////////////////////////////////////////////////
@@ -134,19 +151,19 @@ export class OfficerBulkEntryComponent {
     }
   }
 
-  addLeave(formValue: any, officerId: number, event: Event): void {
+  addLeave( officerId: number, event: Event): void {
     event.preventDefault(); 
-    const newLeave = new Leave(
-      formValue.Id = this.schedulingService.getSecondsSince6AM(),
-      formValue.startDate,
-      formValue.endDate,
-      formValue.leaveType.toUpperCase(),
-      formValue.leaveType
-    );
-    const officer = this.officers.find(o => o.id === officerId);
-    if (officer) {
-      officer.leaves.push(newLeave);
-    }
+    // const newLeave = new Leave(
+    //   formValue.Id = this.schedulingService.getSecondsSince6AM(),
+    //   formValue.startDate,
+    //   formValue.endDate,
+    //   formValue.leaveType.toUpperCase(),
+    //   formValue.leaveType
+    // );
+    // const officer = this.officers.find(o => o.id === officerId);
+    // if (officer) {
+    //   officer.leaves.push(newLeave);
+    // }
     this.activeOfficerIndex = null; // Hide the form after adding the leave
   }
 

@@ -28,6 +28,12 @@ export class Officer {
   public badgeNumber: string;
   public startDate: Date;
   public endDate: Date;
-  public leaveType: string;
+  public leaveName: string
   
+ }
+
+ export class LeaveForm {
+  public leaveName: string;
+  public startDate: string;
+  public endDate: string;
  }

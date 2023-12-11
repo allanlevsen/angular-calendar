@@ -28,7 +28,7 @@
          </div>
          <div class="col-md-2 mb-3">
             <label for="leaveType" class="form-label">Type of leave</label>
-            <select class="form-select" id="leaveType" required name="leave" [(ngModel)]="officerForm.leaveType">
+            <select class="form-select" id="leaveType" required name="leave" [(ngModel)]="officerForm.leaveName">
                <option selected value="">Select</option>
                <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">{{option.DisplayName}}
                </option>
@@ -42,7 +42,7 @@
 </div>
 
 <div class="container my-4">
-   <table class="table table-hover">
+   <table class="table table-hover table-striped">
       <!-- Header Row -->
       <thead class="thead-dark">
          <tr>
@@ -60,9 +60,8 @@
       <tbody>
          <ng-container *ngFor="let officer of officers; let officerIndex = index">
             <!-- If officer has leaves -->
-            <ng-container
-               *ngFor="let leave of officer.leaves; let isFirst = first; ; let last = last; let leaveIndex = index">
-               <tr>
+            <ng-container *ngFor="let leave of officer.leaves; let isFirst = first; ; let last = last; let leaveIndex = index">
+               <tr *ngIf="!isEditing(officer.id, leaveIndex)">
                   <td *ngIf="isFirst; else emptyCell">{{ officer.lastName }}, {{ officer.firstName }}</td>
                   <td *ngIf="isFirst; else emptyCell">{{ officer.agency }}</td>
                   <td *ngIf="isFirst; else emptyCell">{{ officer.badgeNumber }}</td>
@@ -71,83 +70,86 @@
                   <td class="column-end-date">{{ leave.endDate | date }}</td>
                   <td class="action-icon"><i class="fa fa-edit" title="Edit Leave"
                         (click)="editLeave(officer.id, leaveIndex, leave)"></i></td>
-                  <td class="action-icon"><i class="fa fa-plus" *ngIf="isFirst" title="Add Leave"
+                  <td class="action-icon"><i class="fa-regular fa-square-plus" *ngIf="isFirst" title="Add Leave"
                         (click)="showAddLeaveForm(officerIndex)"></i></td>
-                  <td class="action-icon"><i class="fa fa-minus" title="Remove Leave"
+                  <td class="action-icon"><i class="fa-regular fa-square-minus" title="Remove Leave"
                         (click)="removeLeave(officer.id, leaveIndex)"></i></td>
-                  <td class="action-icon"><i *ngIf="isFirst" class="fa fa-trash" title="Delete Officer"
+                  <td class="action-icon"><i *ngIf="isFirst" class="fa-regular fa-trash-can" title="Delete Officer"
                         (click)="onDeleteClick(officer.id)"></i></td>
                </tr>
 
                <!-- Inline edit form for a leave -->
                <tr *ngIf="isEditing(officer.id, leaveIndex)" class="add-edit-row">
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td colspan="3" class="add-edit-row">
-                     <form #editLeaveForm="ngForm">
-                        <ng-container>
-                           <tr>
-                              <td class="column-edit-leave-type" style="margin-left: 10px; margin-right: 10px;">
-                                 <select name="leaveName" [(ngModel)]="editingLeave.leaveName" required>
-                                    <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">
-                                       {{option.DisplayName}}</option>
-                                 </select>
-                              </td>
-                              <td class="column-edit-start-date" style="margin-left: 10px; margin-right: 10px;">
-                                 <input type="date" name="startDate" [ngModel]="editingStartDate" required>
-                              </td>
-                              <td class="column-edit-end-date" style="margin-left: 10px; margin-right: 10px;">
-                                 <input type="date" name="endDate" [ngModel]="editingEndDate" required>
-                              </td>
-                           </tr>
-                        </ng-container>
-                     </form>
-                  </td>
-            <td class="action-icon"><i class="fa fa-plus" title="Update"
-                  (click)="updateLeave(editLeaveForm.value, officer.id, leaveIndex, $event)"></i></td>
-            <td class="action-icon"><i class="fa fa-minus" title="Cancel" (click)="cancelEdit()"></i></td>
-            <td class="action-icon"></td>
-            <td class="action-icon"></td>
-            <!-- <button (click)="updateLeave(editLeaveForm.value, officer.id, leaveIndex, $event)">Save</button>
-                  <button (click)="cancelEdit()">Cancel</button> -->
+                  <!-- <form #editLeaveForm="ngForm"> -->
+                     <td *ngIf="isFirst; else emptyCell">{{ officer.lastName }}, {{ officer.firstName }}</td>
+                     <td *ngIf="isFirst; else emptyCell">{{ officer.agency }}</td>
+                     <td *ngIf="isFirst; else emptyCell">{{ officer.badgeNumber }}</td>
+                     <td class="column-edit-leave-type">
+                        <select name="leaveName" [(ngModel)]="editingLeave.leaveName" required>
+                           <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">
+                              {{option.DisplayName}}</option>
+                        </select>
+                     </td>
+                     <td class="column-edit-start-date">
+                        <input type="date" name="startDate" [(ngModel)]="editingLeave.startDate" required>
+                     </td>
+                     <td class="column-edit-end-date">
+                        <input type="date" name="endDate" [(ngModel)]="editingLeave.endDate" required>
+                     </td>
+                     <td class="action-icon"><i class="fa fa-floppy-disk" title="Update"
+                           (click)="updateLeave( officer.id, leaveIndex, $event)"></i></td>
+                     <td class="action-icon"><i class="fa fa-xmark" title="Cancel" (click)="cancelEdit()"></i></td>
+                     <td class="action-icon"></td>
+                     <td class="action-icon"></td>
+                  <!-- </form> -->
+
+               </tr>
+
+            </ng-container>
+
+            <!-- If officer has no leaves -->
+            <tr *ngIf="officer.leaves.length === 0">
+               <td>{{ officer.lastName }}, {{ officer.firstName }}</td>
+               <td>{{ officer.badgeNumber }}</td>
+               <td>{{ officer.agency }}</td>
+               <td class="column-leave-type"></td>
+               <td class="column-start-date"></td>
+               <td class="column-end-date"></td>
+               <td class="action-icon"></td>
+               <td class="action-icon"><i class="fa-regular fa-square-plus" title="Add Leave"
+                     (click)="showAddLeaveForm(officerIndex)"></i></td>
+               <td class="action-icon"></td>
+               <td class="action-icon"><i class="fa-regular fa-trash-can" title="Delete Officer"
+                     (click)="onDeleteClick(officer.id)"></i></td>
             </tr>
 
-         </ng-container>
+            <!-- Inline form for adding a new leave -->
+            <tr *ngIf="activeOfficerIndex === officerIndex">
 
-         <!-- If officer has no leaves -->
-         <tr *ngIf="officer.leaves.length === 0">
-            <td>{{ officer.lastName }}, {{ officer.firstName }}</td>
-            <td>{{ officer.badgeNumber }}</td>
-            <td>{{ officer.agency }}</td>
-            <td class="column-leave-type"></td>
-            <td class="column-start-date"></td>
-            <td class="column-end-date"></td>
-            <td class="action-icon"></td>
-            <td class="action-icon"><i class="fa fa-plus" title="Add Leave"
-                  (click)="showAddLeaveForm(officerIndex)"></i></td>
-            <td class="action-icon"></td>
-            <td class="action-icon"><i class="fa fa-trash" title="Delete Officer"
-                  (click)="onDeleteClick(officer.id)"></i></td>
-         </tr>
+               <!-- <form #addLeaveForm="ngForm"> -->
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="column-edit-leave-type">
+                     <select name="leaveName" [(ngModel)]="editingLeave.leaveName" required>
+                        <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">
+                           {{option.DisplayName}}</option>
+                     </select>
+                  </td>
+                  <td class="column-edit-start-date">
+                     <input type="date" name="startDate" [(ngModel)]="editingLeave.startDate" required>
+                  </td>
+                  <td class="column-edit-end-date">
+                     <input type="date" name="endDate" [(ngModel)]="editingLeave.endDate" required>
+                  </td>
+                  <td class="action-icon"><i class="fa fa-floppy-disk" title="Update"
+                     (click)="addLeave(officer.id, $event)"></i></td>
+                  <td class="action-icon"><i class="fa fa-xmark" title="Cancel" (click)="cancelAddLeave()"></i></td>
+                  <td class="action-icon"></td>
+                  <td class="action-icon"></td>
+               <!-- </form> -->
 
-         <!-- Inline form for adding a new leave -->
-         <tr *ngIf="activeOfficerIndex === officerIndex">
-            <td colspan="the number of columns to span">
-               <form #addLeaveForm="ngForm">
-                  <input type="date" name="startDate" ngModel required>
-                  <input type="date" name="endDate" ngModel required>
-                  <select name="leaveType" ngModel required>
-                     <option selected value="">Select</option>
-                     <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">
-                        {{option.DisplayName}}</option>
-                  </select>
-                  <button (click)="addLeave(addLeaveForm.value, officer.id, $event)">Update</button>
-                  <button (click)="cancelAddLeave()">Cancel</button>
-               </form>
-            </td>
-         </tr>
-
+            </tr>
 
          </ng-container>
       </tbody>
@@ -157,3 +159,7 @@
 <ng-template #emptyCell>
    <td></td>
 </ng-template>
+
+{{editingLeave?.leaveName}}
+{{editingLeave?.startDate}}
+{{editingLeave?.endDate}}

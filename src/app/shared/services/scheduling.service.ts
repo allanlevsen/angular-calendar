@@ -44,8 +44,8 @@ export class SchedulingService {
         let newLeave = new Leave(id + 1, 
           officerForm.startDate, 
           officerForm.endDate, 
-          officerForm.leaveType[0].toUpperCase(), 
-          officerForm.leaveType);
+          officerForm.leaveName[0].toUpperCase(), 
+          officerForm.leaveName);
         
         newOfficer.leaves.push(newLeave);
 

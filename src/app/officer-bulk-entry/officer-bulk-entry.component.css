@@ -19,6 +19,10 @@
    max-width: 150px;
 }
 
+.column-leave-type-input {
+   width: 150px;
+}
+
 .column-start-date {
    min-width: 155px;
    max-width: 155px;
@@ -27,7 +31,10 @@
 .column-edit-start-date {
    min-width: 155px;
    max-width: 155px;
-   padding-left: 15px;
+}
+
+.column-start-date-input {
+   width: 150px;
 }
 
 .column-end-date {
@@ -38,5 +45,8 @@
 .column-edit-end-date {
    min-width: 150px;
    max-width: 150px;
-   padding-left: 30px;
+}
+
+.column-end-date-input {
+   width: 150px;
 }

@@ -1,13 +1,6 @@
 import { Component } from '@angular/core';
-import { Leave, LeaveForm, Officer, OfficerForm } from '../models/officer.model';
+import { Leave, LeaveForm, Officer, OfficerForm, ScheduleOption } from '../models/officer.model';
 import { SchedulingService } from '../shared/services/scheduling.service';
-
-interface ScheduleOption {
-  DisplayName: string;
-  DataValue: string;
-  CategoryTypeColor: string;
-}
-
 
 
 @Component({
@@ -17,8 +10,6 @@ interface ScheduleOption {
 })
 export class OfficerBulkEntryComponent {
 
-
-  
   // various types, constants, array data
   //
   officers: Officer[] = [
@@ -53,8 +44,6 @@ export class OfficerBulkEntryComponent {
   //
   activeOfficerIndex: number | null = null;
   editingLeave: LeaveForm | null = null;
-  //editingStartDate: string | null = null;
-  //editingEndDate: string | null = null;
   editingOfficerId: number | null = null;
   editingLeaveIndex: number | null = null;
   
@@ -77,14 +66,68 @@ export class OfficerBulkEntryComponent {
     this.deleteOfficerById(officerId);
   }
 
-  showAddLeaveForm(index: number): void {
+  onShowAddLeaveForm(index: number): void {
     this.activeOfficerIndex = index;
     this.editingLeave = new LeaveForm();
   }
 
+  onAddLeave( officerId: number, event: Event): void {
+    event.preventDefault(); 
+
+    const newLeave = new Leave(
+      this.schedulingService.getSecondsSince6AM(),
+      new Date(this.editingLeave.startDate),
+      new Date(this.editingLeave.endDate),
+      this.editingLeave.leaveName[0].toUpperCase(),
+      this.editingLeave.leaveName
+    );
+    const officer = this.officers.find(o => o.id === officerId);
+    if (officer) {
+      officer.leaves.push(newLeave);
+    }
+    this.activeOfficerIndex = null; // Hide the form after adding the leave
+  }
+
+  onCancelAddLeave(): void {
+    this.activeOfficerIndex = null; // Hide the form
+  }
+  
+  onCancelEdit() {
+    this.cancelEdit();
+  }
+
+  onEditLeave(officerId: number, leaveIndex: number, leave: Leave): void {
+    this.editingOfficerId = officerId;
+    this.editingLeaveIndex = leaveIndex;
+    this.editingLeave = this.getLeaveEditingForm();
+    this.editingLeave.leaveName = leave.leaveName;
+    this.editingLeave.startDate = this.formatDate(leave.startDate);
+    this.editingLeave.endDate = this.formatDate(leave.endDate);
+  }
+
+  onRemoveLeave(officerId: number, leaveIndex: number): void {
+    // Find the officer
+    const officer = this.officers.find(o => o.id === officerId);
+  
+    // If the officer is found and the leave index is valid
+    if (officer && leaveIndex > -1 && officer.leaves && officer.leaves.length > leaveIndex) {
+      // Remove the leave from the officer's leaves array
+      officer.leaves.splice(leaveIndex, 1);
+    }
+  
+    // You might want to handle any updates or refreshes here
+  } 
+
   isEditing(officerId: number, leaveIndex: number): boolean {
     return this.editingOfficerId === officerId && this.editingLeaveIndex === leaveIndex;
   }
+
+
+  
+  ////////////////////////////////////////////////////////////
+  //
+  // Utility functions
+  //
 
   getLeaveEditingForm(): LeaveForm {
     if (this.editingLeave === null) {
@@ -100,36 +143,11 @@ export class OfficerBulkEntryComponent {
     }
   }
 
-  editLeave(officerId: number, leaveIndex: number, leave: Leave): void {
-    this.editingOfficerId = officerId;
-    this.editingLeaveIndex = leaveIndex;
-    this.editingLeave = this.getLeaveEditingForm();
-    this.editingLeave.leaveName = leave.leaveName;
-    this.editingLeave.startDate = this.formatDate(leave.startDate);
-    this.editingLeave.endDate = this.formatDate(leave.endDate);
-  }
-
   formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
   }
 
-  updateLeave(officerId: number, leaveIndex: number, event: Event): void {
-    event.preventDefault();
-    const officer = this.officers.find(o => o.id === officerId);
-    if (officer && officer.leaves[leaveIndex]) {
-      officer.leaves[leaveIndex].leaveName = this.editingLeave.leaveName
-      officer.leaves[leaveIndex].startDate = new Date(this.editingLeave.startDate);
-      officer.leaves[leaveIndex].endDate = new Date(this.editingLeave.endDate);
-    }
-    this.cancelEdit(); // Reset editing state
-  }
-
-  cancelEdit(): void {
-    this.editingOfficerId = null;
-    this.editingLeaveIndex = null;
-    this.clearLeaveEditingForm();
-  }
-
+  
   ////////////////////////////////////////////////////////////
   //
   // UI related functions
@@ -151,38 +169,23 @@ export class OfficerBulkEntryComponent {
     }
   }
 
-  addLeave( officerId: number, event: Event): void {
-    event.preventDefault(); 
-    // const newLeave = new Leave(
-    //   formValue.Id = this.schedulingService.getSecondsSince6AM(),
-    //   formValue.startDate,
-    //   formValue.endDate,
-    //   formValue.leaveType.toUpperCase(),
-    //   formValue.leaveType
-    // );
-    // const officer = this.officers.find(o => o.id === officerId);
-    // if (officer) {
-    //   officer.leaves.push(newLeave);
-    // }
-    this.activeOfficerIndex = null; // Hide the form after adding the leave
+  onUpdateLeave(officerId: number, leaveIndex: number, event: Event): void {
+    event.preventDefault();
+    const officer = this.officers.find(o => o.id === officerId);
+    if (officer && officer.leaves[leaveIndex]) {
+      officer.leaves[leaveIndex].leaveName = this.editingLeave.leaveName
+      officer.leaves[leaveIndex].startDate = new Date(this.editingLeave.startDate);
+      officer.leaves[leaveIndex].endDate = new Date(this.editingLeave.endDate);
+    }
+    this.cancelEdit(); // Reset editing state
   }
 
-  cancelAddLeave(): void {
-    this.activeOfficerIndex = null; // Hide the form
+  cancelEdit(): void {
+    this.editingOfficerId = null;
+    this.editingLeaveIndex = null;
+    this.clearLeaveEditingForm();
   }
-  
-  removeLeave(officerId: number, leaveIndex: number): void {
-    // Find the officer
-    const officer = this.officers.find(o => o.id === officerId);
-  
-    // If the officer is found and the leave index is valid
-    if (officer && leaveIndex > -1 && officer.leaves && officer.leaves.length > leaveIndex) {
-      // Remove the leave from the officer's leaves array
-      officer.leaves.splice(leaveIndex, 1);
-    }
-  
-    // You might want to handle any updates or refreshes here
-  } 
+
 
   ////////////////////////////////////////////////////////////
   //

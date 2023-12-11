@@ -1,3 +1,10 @@
+export interface ScheduleOption {
+  DisplayName: string;
+  DataValue: string;
+  CategoryTypeColor: string;
+}
+
+
 export class Leave {
 
   constructor(
@@ -8,6 +15,7 @@ export class Leave {
     public leaveName: string
   ) { }
 }
+
 
 export class Officer {
 
@@ -22,6 +30,7 @@ export class Officer {
  
  }
 
+
  export class OfficerForm {
 
   public agency: string;
@@ -32,6 +41,7 @@ export class Officer {
   
  }
 
+ 
  export class LeaveForm {
   public leaveName: string;
   public startDate: string;

@@ -9,6 +9,11 @@
    max-width: 600px;
    margin: auto;
  }
+
+ .calendar-container-small {
+  max-width: 300px;
+  margin: auto;
+}
  
  /* .calendar-header {
    text-align: left;

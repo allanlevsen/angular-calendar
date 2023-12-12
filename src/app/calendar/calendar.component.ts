@@ -23,6 +23,12 @@ interface CalendarDay {
   styleUrls: ['./calendar.component.css']
 })
 export class CalendarComponent implements OnInit {
+  @Input() readonly: boolean = true;
+  @Input() officerid: number = 0;
+  @Input() leaveid: number = 0;
+  @Input() showcolor: boolean = true;
+  @Input() startdate: string = "";
+  @Input() enddate: string = "";
   @Input() year: number = new Date().getFullYear();
   @Input() month: number = new Date().getMonth() + 1; // JavaScript months are 0-indexed
   weeks: CalendarDay[][] = [];
@@ -60,6 +66,8 @@ export class CalendarComponent implements OnInit {
   ngOnInit() {
     this.updateMonthAndYear();
     this.generateCalendar();
+
+    this.isReadOnly = this.readonly;
   }
 
   onEscapeKey(event: KeyboardEvent): void {

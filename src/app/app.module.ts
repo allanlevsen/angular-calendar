@@ -9,13 +9,15 @@ import { OfficerScheduleComponent } from './officer-schedule/officer-schedule.co
 import { ContainsStringDirective } from './shared/directives/custom-validators/contains-string.directive';
 import { OfficerBulkEntryComponent } from './officer-bulk-entry/officer-bulk-entry.component';
 import { SchedulingService } from './shared/services/scheduling.service';
+import { TwoMonthCalendarComponent } from './two-month-calendar/two-month-calendar.component';
 @NgModule({
   declarations: [
     AppComponent,
     CalendarComponent,
     OfficerScheduleComponent,
     ContainsStringDirective,
-    OfficerBulkEntryComponent
+    OfficerBulkEntryComponent,
+    TwoMonthCalendarComponent
   ],
   imports: [
     BrowserModule,

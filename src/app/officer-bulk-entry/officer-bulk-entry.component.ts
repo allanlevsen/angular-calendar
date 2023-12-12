@@ -42,12 +42,17 @@ export class OfficerBulkEntryComponent {
 
   // Inline Leave variables
   //
+  showCalendar: boolean = false;
+  showCalendarId: number; 
+  calendarLeaveIndex: number;
+
   activeOfficerIndex: number | null = null;
   editingLeave: LeaveForm | null = null;
   editingOfficerId: number | null = null;
   editingLeaveIndex: number | null = null;
   
-  constructor(private schedulingService: SchedulingService) {}
+  constructor(private schedulingService: SchedulingService) {
+  }
 
 
   ////////////////////////////////////////////////////////////
@@ -105,6 +110,16 @@ export class OfficerBulkEntryComponent {
     this.editingLeave.endDate = this.formatDate(leave.endDate);
   }
 
+  onShowCalendar(officerId: number, leaveIndex: number) {
+    this.calendarLeaveIndex = null;
+      this.showCalendarId = null;
+    this.showCalendar = !this.showCalendar;
+    if (this.showCalendar) {
+      this.calendarLeaveIndex = leaveIndex;
+      this.showCalendarId = officerId;
+    }
+  }
+
   onRemoveLeave(officerId: number, leaveIndex: number): void {
     // Find the officer
     const officer = this.officers.find(o => o.id === officerId);
@@ -122,6 +137,9 @@ export class OfficerBulkEntryComponent {
     return this.editingOfficerId === officerId && this.editingLeaveIndex === leaveIndex;
   }
 
+  isShowCalendar(officerId: number, leaveIndex: number): boolean {
+    return this.showCalendarId === officerId && this.calendarLeaveIndex === leaveIndex;
+  }
 
   
   ////////////////////////////////////////////////////////////

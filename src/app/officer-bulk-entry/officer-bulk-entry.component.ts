@@ -165,6 +165,10 @@ export class OfficerBulkEntryComponent {
     return date.toISOString().split('T')[0];
   }
 
+  getString(dateString: string): string {
+    return dateString;
+  }
+
   
   ////////////////////////////////////////////////////////////
   //

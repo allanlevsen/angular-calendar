@@ -84,7 +84,7 @@
                <tr *ngIf="!isEditing(officer.id, leaveIndex) && isShowCalendar(officer.id, leaveIndex)">
                   <td colspan="3"></td>
                   <td colspan="8">
-                     <app-calendar [readonly]="false"></app-calendar>
+                     <app-calendar [readonly]="true" [leave]=leave [officer]="officer"></app-calendar>
                   </td>
                </tr>
                <!-- Inline edit form for a leave -->

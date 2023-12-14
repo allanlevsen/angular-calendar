@@ -1,4 +1,5 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Leave, Officer } from '../models/officer.model';
 
 interface DayValue {
   date: Date;
@@ -12,6 +13,7 @@ interface ScheduleOption {
 }
 
 interface CalendarDay {
+  date: Date | null;
   day: number | null;
   isCurrentMonth: boolean;
   value: string | null;
@@ -23,14 +25,10 @@ interface CalendarDay {
   styleUrls: ['./calendar.component.css']
 })
 export class CalendarComponent implements OnInit {
+  @Input() officer: Officer = null;
+  @Input() leave: Leave = null;
   @Input() readonly: boolean = true;
-  @Input() officerid: number = 0;
-  @Input() leaveid: number = 0;
   @Input() showcolor: boolean = true;
-  @Input() startdate: string = "";
-  @Input() enddate: string = "";
-  @Input() year: number = new Date().getFullYear();
-  @Input() month: number = new Date().getMonth() + 1; // JavaScript months are 0-indexed
   weeks: CalendarDay[][] = [];
   dayValues: DayValue[] = []; // This should be provided with the actual values
 
@@ -47,13 +45,22 @@ export class CalendarComponent implements OnInit {
   ];  
   
   monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  currentMonthName: string;
 
-  // Add a property to track the currently selected day for which the popup is being shown
+  // Component variables
+  //
   selectedDay: CalendarDay | null = null;
   defaultackgroundColor: string = "#fefefe";
 
   isReadOnly: boolean = false;
+  startDateRange: Date;
+  endDateRange: Date;
+  year: number = new Date().getFullYear();
+  month: number = new Date().getMonth() + 1;
+  endYear: number = this.year+2;
+  endMonth: number = this.month+1;
+  currentDate = new Date();
+
+  currentMonthName: string;
   useBackgroundColors: boolean = true;
   popupChangeDetector: boolean = true;
 
@@ -64,10 +71,55 @@ export class CalendarComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) // Listen for the escape key
 
   ngOnInit() {
-    this.updateMonthAndYear();
-    this.generateCalendar();
 
     this.isReadOnly = this.readonly;
+    this.startDateRange = this.leave.startDate;
+    this.endDateRange = this.leave.endDate;
+    this.year = this.startDateRange.getFullYear();
+    this.month = this.startDateRange.getMonth() + 1; 
+    this.endYear = this.endDateRange.getFullYear();
+    this.endMonth = this.endDateRange.getMonth() + 1; 
+
+    let leaveType = this.scheduleOptions.find(dn =>
+      dn.DataValue === this.leave.leaveCode);
+    let curDate = new Date(this.leave.startDate.getTime()); // Create a new instance to avoid modifying the original startDate
+    let lastDate = this.leave.endDate;
+    while (curDate <= lastDate) {
+      this.addCalendarDayValue(curDate, leaveType);
+      curDate.setDate(curDate.getDate() + 1);
+    }
+
+    this.currentDate = new Date(this.leave.startDate.getTime());
+    this.updateMonthAndYear();
+    this.generateCalendar();
+  }
+
+  isPrevMonthAllowed() {
+    const compareDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
+    return this.startDateRange < compareDate ? true : false;
+  }
+
+  isNextMonthAllowed() {
+    const lastDay = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0);
+    return lastDay < this.endDateRange ? true : false;
+  }
+
+  addCalendarDayValue(date: Date, value: ScheduleOption) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    const dayIndex = this.dayValues.findIndex(dv => 
+      dv.date.getDate() === day && 
+      dv.date.getMonth() + 1 === month && 
+      dv.date.getFullYear() === year
+    );  
+  
+    if (dayIndex !== -1) {
+      this.dayValues[dayIndex].value = value.DataValue;
+    } else {
+      this.dayValues.push({ date: new Date(year, month - 1, day), value: value.DataValue });
+    }
   }
 
   onEscapeKey(event: KeyboardEvent): void {
@@ -85,6 +137,7 @@ export class CalendarComponent implements OnInit {
     } else {
       this.month--;
     }
+    this.currentDate = new Date(this.year, this.month - 1, 1);
     this.updateMonthAndYear();
     this.generateCalendar();
   }
@@ -96,11 +149,13 @@ export class CalendarComponent implements OnInit {
     } else {
       this.month++;
     }
+    this.currentDate = new Date(this.year, this.month - 1, 1);
     this.updateMonthAndYear();
     this.generateCalendar();
   }
 
   generateCalendar(): void {
+
     const firstDayOfMonth = new Date(this.year, this.month - 1, 1).getDay();
     const numberOfDaysInMonth = new Date(this.year, this.month, 0).getDate();
     const previousMonth = this.month - 1;
@@ -108,40 +163,60 @@ export class CalendarComponent implements OnInit {
     const previousMonthNumberOfDays = new Date(previousYear, previousMonth, 0).getDate();
 
     let date = 1;
+    let dateReset = false;
     let previousMonthDate = previousMonthNumberOfDays - firstDayOfMonth + 1;
+
+    let curDate = null;
     this.weeks = [];
 
     for (let i = 0; i < 6; i++) { // 6 weeks to cover all possibilities
       const week: CalendarDay[] = [];
       
       for (let j = 0; j < 7; j++) {
+
+        if (date > numberOfDaysInMonth && !dateReset) {
+          date = 1;
+          dateReset = true;
+        }
+
         if (i === 0 && j < firstDayOfMonth) {
-          week.push({ day: previousMonthDate, isCurrentMonth: false, value: null });
+          curDate = new Date(previousYear, previousMonth-1, previousMonthDate);
+          week.push({ date: curDate, day: previousMonthDate, isCurrentMonth: false, value: null });
           previousMonthDate++;
-        } else if (date > numberOfDaysInMonth) {
-          week.push({ day: null, isCurrentMonth: false, value: null });
+        } else if (date > numberOfDaysInMonth || dateReset) {
+          let y = this.year;
+          let m = this.month+1;
+          if (m>12) {
+            m = 1;
+            y++;
+          }
+          curDate = new Date(y, m-1, date);
+          week.push({  date: curDate, day: date, isCurrentMonth: false, value: null });
+          date++;
         } else {
-          week.push({ day: date, isCurrentMonth: true, value: null });
+          curDate = new Date(this.year, this.month-1, date);
+          week.push({  date: curDate, day: date, isCurrentMonth: true, value: null });
           date++;
         }
       }
       this.weeks.push(week);
-      if (date > numberOfDaysInMonth) {
+      if (date > numberOfDaysInMonth || dateReset) {
         break; // Stop creating weeks if we've run out of days in the month
       }
     }
   }
 
-  getDayValue(day: number): string | null {
-    const dayValue = this.dayValues.find(dv =>
-      dv.date.getDate() === day &&
-      dv.date.getMonth() + 1 === this.month &&
-      dv.date.getFullYear() === this.year
-    );
+  getDayValue(day: CalendarDay): string | null {
+
+    const dayValue = this.dayValues.find(dv => 
+      dv.date.getDate() === day.date.getDate() && 
+      dv.date.getMonth() === day.date.getMonth() && 
+      dv.date.getFullYear() === day.date.getFullYear()
+    ); 
     return dayValue ? dayValue.value : null;
   }
 
-  getDayDisplayName(day: number): string | null {
+  getDayDisplayName(day: CalendarDay): string | null {
     const dayValue = this.getDayValue(day);
     if (dayValue) {
       const dayName = this.scheduleOptions.find(dn =>
@@ -168,11 +243,6 @@ export class CalendarComponent implements OnInit {
   }
 
   // popup select list
-
-  // showOptions(day: CalendarDay, event: MouseEvent): void {
-  //   event.preventDefault();
-  //   this.selectedDay = day;
-  // }
 
   showOptions(day: CalendarDay, event: MouseEvent): void {
     event.preventDefault(); // Prevent default context menu
@@ -209,8 +279,7 @@ export class CalendarComponent implements OnInit {
           dv.date.getDate() === this.selectedDay.day && 
           dv.date.getMonth() + 1 === this.month && 
           dv.date.getFullYear() === this.year
-        );
-        
+        );  
         
         if (dayIndex !== -1) {
           this.dayValues[dayIndex].value = option.DataValue;
@@ -226,34 +295,13 @@ export class CalendarComponent implements OnInit {
     this.selectedDays.clear(); // Optionally clear the selection after applying
   }
 
-  // selectOption(option: ScheduleOption): void {
-  //   if (this.selectedDay) {
-  //     this.selectedDay.value = option.DataValue;
-      
-  //     // Update the dayValues array as well
-  //     const dayIndex = this.dayValues.findIndex(dv => 
-  //       dv.date.getDate() === this.selectedDay.day && 
-  //       dv.date.getMonth() + 1 === this.month && 
-  //       dv.date.getFullYear() === this.year
-  //     );
-      
-  //     if (dayIndex !== -1) {
-  //       this.dayValues[dayIndex].value = option.DataValue;
-  //     } else {
-  //       this.dayValues.push({ date: new Date(this.year, this.month - 1, this.selectedDay.day), value: option.DataValue });
-  //     }
-
-  //     this.selectedDay = null; // Hide the popup after selection
-  //   }
-  // }
-
-  getDayBackgroundColor(day: number): string {
+  getDayBackgroundColor(day: CalendarDay): string {
     if (this.useBackgroundColors) {
-      const dayValue = this.dayValues.find(dv =>
-        dv.date.getDate() === day &&
-        dv.date.getMonth() + 1 === this.month &&
-        dv.date.getFullYear() === this.year
-      );
+      const dayValue = this.dayValues.find(dv => 
+        dv.date.getDate() === day.date.getDate() && 
+        dv.date.getMonth() === day.date.getMonth() && 
+        dv.date.getFullYear() === day.date.getFullYear()
+      ); 
       if (dayValue) {
         const option = this.scheduleOptions.find(opt => opt.DataValue === dayValue.value);
         return option ? option.CategoryTypeColor : this.defaultackgroundColor;
@@ -279,7 +327,6 @@ export class CalendarComponent implements OnInit {
     // Add logic to handle background color usage
   }
 
-
   // Multiple day selection capability
 
   handleDayClick(day: CalendarDay, event: MouseEvent): void {
@@ -301,8 +348,6 @@ export class CalendarComponent implements OnInit {
     this.popupTop = event.clientY + 'px';
     this.popupLeft = event.clientX + 'px';
   }
-
-
 
   isDaySelected(day: CalendarDay): boolean {
     return this.selectedDays.has(day);

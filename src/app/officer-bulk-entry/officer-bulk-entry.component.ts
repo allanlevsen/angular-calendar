@@ -81,8 +81,8 @@ export class OfficerBulkEntryComponent {
 
     const newLeave = new Leave(
       this.schedulingService.getSecondsSince6AM(),
-      new Date(this.editingLeave.startDate),
-      new Date(this.editingLeave.endDate),
+      this.getScheduleDate(this.editingLeave.startDate),
+      this.getScheduleDate(this.editingLeave.endDate),
       this.editingLeave.leaveName[0].toUpperCase(),
       this.editingLeave.leaveName
     );
@@ -106,18 +106,35 @@ export class OfficerBulkEntryComponent {
     this.editingLeaveIndex = leaveIndex;
     this.editingLeave = this.getLeaveEditingForm();
     this.editingLeave.leaveName = leave.leaveName;
-    this.editingLeave.startDate = this.formatDate(leave.startDate);
-    this.editingLeave.endDate = this.formatDate(leave.endDate);
+    this.editingLeave.startDate = this.getScheduleDateString(leave.startDate);
+    this.editingLeave.endDate = this.getScheduleDateString(leave.endDate);
   }
 
   onShowCalendar(officerId: number, leaveIndex: number) {
+    let thisCalendarId = this.getUniqueCalendarId(officerId, leaveIndex);
+
+    if (thisCalendarId === this.showCalendarId)
+      this.showCalendar = !this.showCalendar;
+    else
+      this.showCalendar = true;
+
     this.calendarLeaveIndex = null;
-      this.showCalendarId = null;
-    this.showCalendar = !this.showCalendar;
+    this.showCalendarId = null;
     if (this.showCalendar) {
       this.calendarLeaveIndex = leaveIndex;
-      this.showCalendarId = officerId;
+      this.showCalendarId = thisCalendarId;
     }
+  }
+
+  onUpdateLeave(officerId: number, leaveIndex: number, event: Event): void {
+    event.preventDefault();
+    const officer = this.officers.find(o => o.id === officerId);
+    if (officer && officer.leaves[leaveIndex]) {
+      officer.leaves[leaveIndex].leaveName = this.editingLeave.leaveName
+      officer.leaves[leaveIndex].startDate = this.getScheduleDate(this.editingLeave.startDate);
+      officer.leaves[leaveIndex].endDate = this.getScheduleDate(this.editingLeave.endDate);
+    }
+    this.cancelEdit(); // Reset editing state
   }
 
   onRemoveLeave(officerId: number, leaveIndex: number): void {
@@ -138,7 +155,8 @@ export class OfficerBulkEntryComponent {
   }
 
   isShowCalendar(officerId: number, leaveIndex: number): boolean {
-    return this.showCalendarId === officerId && this.calendarLeaveIndex === leaveIndex;
+    let thisCalendarId = this.getUniqueCalendarId(officerId, leaveIndex);
+    return this.showCalendarId === thisCalendarId;
   }
 
   
@@ -161,14 +179,90 @@ export class OfficerBulkEntryComponent {
     }
   }
 
-  formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
-  }
-
   getString(dateString: string): string {
     return dateString;
   }
 
+  getUniqueCalendarId(officerId: number, leaveIndex: number) : number {
+    return officerId*10+leaveIndex;
+  }
+
+  getScheduleDateString(input) {
+    let date;
+
+    if (typeof input === 'string') {
+        // Parse the date as local time but set the time to midnight
+        const parts = input.split('-'); // Split YYYY-MM-DD
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+        const day = parseInt(parts[2], 10);
+
+        date = new Date(year, month, day);
+    } else if (input instanceof Date) {
+        // If the input is a Date object, create a new Date with the same local date
+        date = new Date(input.getFullYear(), input.getMonth(), input.getDate());
+    } else {
+        throw new Error('Input must be a date string or a Date object');
+    }
+
+    // Format the date to yyyy-mm-dd
+    let year = date.getUTCFullYear();
+    let month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    let day = date.getUTCDate().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  getScheduleDateShortString(input) {
+    // Array of month names
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    // local variable to hold the working date
+    let date;
+
+    if (typeof input === 'string') {
+        // Parse the date as local time but set the time to midnight
+        const parts = input.split('-'); // Split YYYY-MM-DD
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+        const day = parseInt(parts[2], 10);
+
+        date = new Date(year, month, day);
+    } else if (input instanceof Date) {
+        // If the input is a Date object, create a new Date with the same local date
+        date = new Date(input.getFullYear(), input.getMonth(), input.getDate());
+    } else {
+        throw new Error('Input must be a date string or a Date object');
+    }
+
+    // Format the date to 'MMM dd, yyyy'
+    let year = date.getUTCFullYear();
+    let month = monthNames[date.getUTCMonth()];
+    let day = date.getUTCDate().toString().padStart(2, '0');
+
+    return `${month} ${day}, ${year}`;
+  }
+
+  getScheduleDate(input) {
+    let date;
+
+    if (typeof input === 'string') {
+        // Parse the date as local time but set the time to midnight
+        const parts = input.split('-'); // Split YYYY-MM-DD
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+        const day = parseInt(parts[2], 10);
+
+        date = new Date(year, month, day);
+    } else if (input instanceof Date) {
+        // If the input is a Date object, create a new Date with the same local date
+        date = new Date(input.getFullYear(), input.getMonth(), input.getDate());
+    } else {
+        throw new Error('Input must be a date string or a Date object');
+    }
+
+    return date;
+  }
   
   ////////////////////////////////////////////////////////////
   //
@@ -191,17 +285,6 @@ export class OfficerBulkEntryComponent {
     }
   }
 
-  onUpdateLeave(officerId: number, leaveIndex: number, event: Event): void {
-    event.preventDefault();
-    const officer = this.officers.find(o => o.id === officerId);
-    if (officer && officer.leaves[leaveIndex]) {
-      officer.leaves[leaveIndex].leaveName = this.editingLeave.leaveName
-      officer.leaves[leaveIndex].startDate = new Date(this.editingLeave.startDate);
-      officer.leaves[leaveIndex].endDate = new Date(this.editingLeave.endDate);
-    }
-    this.cancelEdit(); // Reset editing state
-  }
-
   cancelEdit(): void {
     this.editingOfficerId = null;
     this.editingLeaveIndex = null;
@@ -215,6 +298,9 @@ export class OfficerBulkEntryComponent {
   //
 
   createNewOfficer(officerForm: OfficerForm) : Officer {
+    officerForm.startDate = this.getScheduleDate(officerForm.startDate);
+    officerForm.endDate = this.getScheduleDate(officerForm.endDate);
+
     this.schedulingService
         .addOfficerSchedule(officerForm)
         .subscribe( o => {

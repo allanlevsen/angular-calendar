@@ -53,7 +53,7 @@
             <th scope="col" class="column-leave-type">Leave Name</th>
             <th scope="col" class="column-start-date">Start Date</th>
             <th scope="col" class="column-end-date">End Date</th>
-            <th scope="col" colspan="4">Actions</th>
+            <th scope="col" colspan="4" class="padding-right">Actions</th>
          </tr>
       </thead>
 
@@ -70,20 +70,20 @@
                   <td class="action-icon"><i class="fa-regular fa-calendar-days" title="Show Calendar"
                      (click)="onShowCalendar(officer.id, leaveIndex)"></i></td>
                   <td class="column-leave-type">{{ leave.leaveName }}</td>
-                  <td class="column-start-date">{{ leave.startDate | date }}</td>
-                  <td class="column-end-date">{{ leave.endDate | date }}</td>
+                  <td class="column-start-date">{{ getScheduleDateString(leave.startDate) }}</td>
+                  <td class="column-end-date">{{ getScheduleDateString(leave.endDate) }}</td>
                   <td class="action-icon"><i class="fa fa-edit" title="Edit Leave"
                         (click)="onEditLeave(officer.id, leaveIndex, leave)"></i></td>
                   <td class="action-icon"><i class="fa-regular fa-square-plus" *ngIf="isFirst" title="Add Leave"
                         (click)="onShowAddLeaveForm(officerIndex)"></i></td>
                   <td class="action-icon"><i class="fa-regular fa-square-minus" title="Remove Leave"
                         (click)="onRemoveLeave(officer.id, leaveIndex)"></i></td>
-                  <td class="action-icon"><i *ngIf="isFirst" class="fa-regular fa-trash-can" title="Delete Officer"
+                  <td class="action-icon padding-right"><i *ngIf="isFirst" class="fa-regular fa-trash-can" title="Delete Officer"
                         (click)="onDeleteClick(officer.id)"></i></td>
                </tr>
                <tr *ngIf="!isEditing(officer.id, leaveIndex) && isShowCalendar(officer.id, leaveIndex)">
                   <td colspan="3"></td>
-                  <td colspan="8">
+                  <td colspan="8" class="padding-right">
                      <app-calendar [readonly]="true" [leave]=leave [officer]="officer"></app-calendar>
                   </td>
                </tr>
@@ -109,7 +109,7 @@
                         (click)="onUpdateLeave( officer.id, leaveIndex, $event)"></i></td>
                   <td class="action-icon"><i class="fa fa-xmark" title="Cancel" (click)="onCancelEdit()"></i></td>
                   <td class="action-icon"></td>
-                  <td class="action-icon"></td>
+                  <td class="action-icon padding-right"></td>
                </tr>
             </ng-container>
 
@@ -126,7 +126,7 @@
                <td class="action-icon"><i class="fa-regular fa-square-plus" title="Add Leave"
                      (click)="onShowAddLeaveForm(officerIndex)"></i></td>
                <td class="action-icon"></td>
-               <td class="action-icon"><i class="fa-regular fa-trash-can" title="Delete Officer"
+               <td class="action-icon padding-right"><i class="fa-regular fa-trash-can" title="Delete Officer"
                      (click)="onDeleteClick(officer.id)"></i></td>
             </tr>
 
@@ -152,7 +152,7 @@
                      (click)="onAddLeave(officer.id, $event)"></i></td>
                <td class="action-icon"><i class="fa fa-xmark" title="Cancel" (click)="onCancelAddLeave()"></i></td>
                <td class="action-icon"></td>
-               <td class="action-icon"></td>
+               <td class="action-icon padding-right"></td>
             </tr>
          </ng-container>
       </tbody>

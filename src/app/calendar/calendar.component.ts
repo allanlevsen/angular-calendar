@@ -247,26 +247,28 @@ export class CalendarComponent implements OnInit {
   showOptions(day: CalendarDay, event: MouseEvent): void {
     event.preventDefault(); // Prevent default context menu
 
-    // Show the popup without altering the existing selection
-    if (!this.selectedDays.has(day)) {
-      this.selectedDays.clear();
-      this.selectedDays.add(day);
-    }
-    else {
-      const selectedDaysArray = Array.from(this.selectedDays);
-      if (selectedDaysArray.length === 0) {
-        this.selectedDay = null;
-        this.hideOptions();
-      } else {
-        this.selectedDay = selectedDaysArray[selectedDaysArray.length - 1];
-        this.popupChangeDetector = !this.popupChangeDetector;
-        this.popupChangeDetector = true;
+    if (!this.readonly) {
+      // Show the popup without altering the existing selection
+      if (!this.selectedDays.has(day)) {
+        this.selectedDays.clear();
+        this.selectedDays.add(day);
       }
-    }
+      else {
+        const selectedDaysArray = Array.from(this.selectedDays);
+        if (selectedDaysArray.length === 0) {
+          this.selectedDay = null;
+          this.hideOptions();
+        } else {
+          this.selectedDay = selectedDaysArray[selectedDaysArray.length - 1];
+          this.popupChangeDetector = !this.popupChangeDetector;
+          this.popupChangeDetector = true;
+        }
+      }
 
-    // Calculate popup position
-    this.popupTop = event.clientY + 'px';
-    this.popupLeft = event.clientX + 'px';
+      // Calculate popup position
+      this.popupTop = event.clientY + 'px';
+      this.popupLeft = event.clientX + 'px';
+    }
   }
 
   applySelectionToDays(option: ScheduleOption): void {
@@ -330,23 +332,25 @@ export class CalendarComponent implements OnInit {
   // Multiple day selection capability
 
   handleDayClick(day: CalendarDay, event: MouseEvent): void {
-    if (event.shiftKey) {
-      // Shift-click behavior
-      if (this.selectedDays.has(day)) {
-        this.selectedDays.delete(day); // Deselect if already selected
+    if (!this.readonly) {
+      if (event.shiftKey) {
+        // Shift-click behavior
+        if (this.selectedDays.has(day)) {
+          this.selectedDays.delete(day); // Deselect if already selected
+        } else {
+          this.selectedDays.add(day); // Select the day
+        }
       } else {
-        this.selectedDays.add(day); // Select the day
+        // Normal click behavior
+        this.hideOptions();
+        this.selectedDays.clear();
+        this.selectedDays.add(day);
       }
-    } else {
-      // Normal click behavior
-      this.hideOptions();
-      this.selectedDays.clear();
-      this.selectedDays.add(day);
-    }
 
-    // Calculate and update popup position
-    this.popupTop = event.clientY + 'px';
-    this.popupLeft = event.clientX + 'px';
+      // Calculate and update popup position
+      this.popupTop = event.clientY + 'px';
+      this.popupLeft = event.clientX + 'px';
+    }
   }
 
   isDaySelected(day: CalendarDay): boolean {

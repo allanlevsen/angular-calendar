@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 import { Officer, Leave, OfficerForm } from 'src/app/models/officer.model';
+import { ApiService } from './api.service';
+import { Person } from 'src/app/models/person.model';
 
 type FullName = {
   firstName: string;
@@ -26,7 +28,7 @@ const names: FullName[] = [
 })
 export class SchedulingService {
 
-  constructor() { }
+  constructor(private apiService: ApiService) { }
 
 
   addOfficerSchedule(officerForm: OfficerForm): Observable<Officer> {
@@ -78,4 +80,61 @@ export class SchedulingService {
     const randomName = names[randomIndex];
     return randomName;
   }
+
+  // examples using the generic api service
+  //
+
+  // Get a person by ID
+  getPerson(personId: number): void {
+    this.apiService.get<Person>(`persons/${personId}`).subscribe(
+      person => {
+        console.log('Person data:', person);
+      },
+      error => {
+        if (error.errorMessage.includes('timed out')) {
+          console.error('Request timed out:', error.errorMessage);
+        } else {
+          console.error('An error occurred:', error.errorMessage);
+        }
+      }
+    );
+  }
+
+  // Add a new person
+  addPerson(newPerson: Person): void {
+    this.apiService.post<Person>('persons', newPerson).subscribe(
+      person => {
+        console.log('Person added:', person);
+      },
+      error => {
+        console.error('An error occurred:', error.errorMessage);
+      }
+    );
+  }
+
+  // Update a person's details
+  updatePerson(personId: number, updatedPersonData: Person): void {
+    this.apiService.put<Person>(`persons/${personId}`, updatedPersonData).subscribe(
+      person => {
+        console.log('Person updated:', person);
+      },
+      error => {
+        console.error('An error occurred:', error.errorMessage);
+      }
+    );
+  }
+
+  // Delete a person by ID
+  deletePerson(personId: number): void {
+    this.apiService.delete<any>(`persons/${personId}`).subscribe(
+      response => {
+        console.log('Person deleted:', response);
+      },
+      error => {
+        console.error('An error occurred:', error.errorMessage);
+      }
+    );
+  }
+
+
 }

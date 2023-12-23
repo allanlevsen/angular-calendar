@@ -13,7 +13,6 @@
          *ngFor="let day of ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']">{{ day }}
       </div>
    </div>
-
    <div class="calendar">
       <div class="week" *ngFor="let week of weeks">
          <div class="day" *ngFor="let day of week" 
@@ -22,18 +21,9 @@
             (click)="handleDayClick(day, $event)"
             [ngStyle]="{'background-color': getDayBackgroundColor(day)}">
             <span *ngIf="day.day" class="day-number" [class.grey-day]="!day.isCurrentMonth">{{ day.day }}</span>
-            
-            <!-- <button *ngIf="day.isCurrentMonth && !isReadOnly" class="edit-btn">
-               <i class="fas fa-edit"></i>
-            </button> -->
             <button *ngIf="!isReadOnly" class="edit-btn">
                <i class="fas fa-edit"></i>
             </button>
-
-            <!-- Display the value for each day -->
-            <!-- <span *ngIf="day.isCurrentMonth" class="value" title="{{ getDayDisplayName(day.day) }}">
-               {{ getDayValue(day.day) }}
-            </span> -->
             <span class="value" title="{{ getDayDisplayName(day) }}">
                {{ getDayValue(day) }}
             </span>
@@ -41,11 +31,9 @@
          </div>
       </div>
    </div>
-
    <div class="options-popup" *ngIf="selectedDay" [ngStyle]="{'top': popupTop, 'left': popupLeft}">
       <div class="option" *ngFor="let option of scheduleOptions" (click)="applySelectionToDays(option)">
         {{ option.DisplayName }}
       </div>
     </div>
-
 </div>

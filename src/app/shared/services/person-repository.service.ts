@@ -1,29 +1,60 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { ApiService } from './api.service'; // Adjust the path as necessary
 import { Person } from '../../models/person.model'; // Adjust the path as necessary
+import { PersonViewModel } from '../../models/person-viewModel.model' // Adjust the path as necessary
+import { AutoMapperService } from './auto-mapper.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class PersonRepositoryService {
 
-  constructor(private apiService: ApiService) { }
 
-  getPerson(personId: number): Observable<Person> {
-    return this.apiService.get<Person>(`persons/${personId}`);
+   // Mapping from Person to PersonViewModel
+   //
+   //const personViewModel = this.autoMapper.map(person, PersonViewModel);
+
+   // Mapping from PersonViewModel to Person
+   //
+   // const person = this.autoMapper.map(personViewModel, Person);
+
+  constructor(private apiService: ApiService, private autoMapperService: AutoMapperService) { }
+
+  private mapToPersonViewModel(person: Person): PersonViewModel {
+    return this.autoMapperService.map(person, PersonViewModel);
   }
 
-  addPerson(newPerson: Person): Observable<Person> {
-    return this.apiService.post<Person>('persons', newPerson);
+  private mapToPerson(personViewModel: PersonViewModel): Person {
+   return this.autoMapperService.map(personViewModel, Person);
   }
 
-  updatePerson(personId: number, updatedPersonData: Person): Observable<Person> {
-    return this.apiService.put<Person>(`persons/${personId}`, updatedPersonData);
+  getPerson(personId: number): Observable<PersonViewModel> {
+    return this.apiService.get<Person>(`persons/${personId}`).pipe(
+      map(person => this.mapToPersonViewModel(person))
+    );
   }
 
-  deletePerson(personId: number): Observable<any> {
-    return this.apiService.delete<any>(`persons/${personId}`);
+  addPerson(newPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
+    const person = this.mapToPerson(newPersonViewModel);
+    return this.apiService.post<Person>('persons', person).pipe(
+      map(responsePerson => this.mapToPersonViewModel(responsePerson))
+    );
+  }
+
+  updatePerson(personId: number, updatedPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
+    const person = this.mapToPerson(updatedPersonViewModel);
+    return this.apiService.put<Person>(`persons/${personId}`, person).pipe(
+      map(responsePerson => this.mapToPersonViewModel(responsePerson))
+    );
+  }
+
+  deletePerson(personId: number): Observable<PersonViewModel> {
+    // Assuming the delete API returns the deleted Person object
+    return this.apiService.delete<Person>(`persons/${personId}`).pipe(
+      map(person => this.mapToPersonViewModel(person))
+    );
   }
 }
 

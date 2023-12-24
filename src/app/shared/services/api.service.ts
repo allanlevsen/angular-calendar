@@ -10,7 +10,7 @@ export class ApiService {
 
   // allan todo: get these from the environment variables
   //
-  private readonly baseUrl: string = 'http://yourapiurl.com'; // Replace with your API URL
+  private readonly baseUrl: string = 'http://localhost:4200/'; // Replace with your API URL
   private readonly requestTimeout = 3000; // Timeout in milliseconds, adjust as needed
   private readonly retryCount = 3; // Number of retries, adjust as needed
 

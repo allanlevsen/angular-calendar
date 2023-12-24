@@ -10,6 +10,14 @@ import { ContainsStringDirective } from './shared/directives/custom-validators/c
 import { OfficerBulkEntryComponent } from './officer-bulk-entry/officer-bulk-entry.component';
 import { SchedulingService } from './shared/services/scheduling.service';
 import { TwoMonthCalendarComponent } from './two-month-calendar/two-month-calendar.component';
+
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { MockBackendInterceptor } from './shared/services/mock-backend-interceptor.service';
+import { ApiService } from './shared/services/api.service';
+import { PersonRepositoryService } from './shared/services/person-repository.service';
+import { AutoMapperService } from './shared/services/auto-mapper.service';
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,10 +30,18 @@ import { TwoMonthCalendarComponent } from './two-month-calendar/two-month-calend
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [
-    SchedulingService
+    SchedulingService,
+    ApiService,
+    PersonRepositoryService,
+    MockBackendInterceptor,
+    AutoMapperService,
+
+    { provide: HTTP_INTERCEPTORS, useClass: MockBackendInterceptor, multi: true },
+
   ],
   bootstrap: [AppComponent]
 })

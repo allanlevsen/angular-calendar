@@ -62,8 +62,22 @@ export class OfficerBulkEntryComponent {
 
   onSubmit() { 
     this.submitted = true; 
-    let officer = this.createNewOfficer(this.officerForm);
-    console.log(officer);
+
+    const badgeNumbersArray = this.officerForm.badgeNumber.split(',').map(num => num.trim());
+    badgeNumbersArray.forEach(badgeNumber => {
+      if (badgeNumber) {
+        const officerDetails: OfficerForm = {
+          agency: this.officerForm.agency,
+          badgeNumber: badgeNumber,
+          startDate: this.officerForm.startDate,
+          endDate: this.officerForm.endDate,
+          leaveName: this.officerForm.leaveName
+        };
+        let officer = this.createNewOfficer(officerDetails);
+        console.log(officer);
+      }
+    });
+
   }
 
   // This would be bound to the click event of the trash can icon in your template

@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 
 import { Officer, Leave, OfficerForm } from 'src/app/models/officer.model';
 import { ApiService } from './api.service';
 import { Person } from 'src/app/models/person.model';
+import { OfficerViewModel } from 'src/app/models/officer-viewModel.model';
+import { AutoMapperService } from './auto-mapper.service';
+import { LeaveTypeViewModel } from 'src/app/models/leave-type-viewModel.model';
+import { LeaveType } from 'src/app/models/leave-type.model';
 
 type FullName = {
   firstName: string;
@@ -28,8 +32,26 @@ const names: FullName[] = [
 })
 export class SchedulingService {
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private autoMapperService: AutoMapperService) { }
 
+  // api service methods needed to connect to backend
+  //
+
+  getOfficer(agency: string, badgeNumber): Observable<OfficerViewModel> {
+    return this.apiService.get<Officer>(`officer/${agency}/${badgeNumber}`).pipe(
+      map(officer => this.autoMapperService.map(officer, OfficerViewModel))
+    );
+  }
+  
+  getLeaveTypes(): Observable<LeaveTypeViewModel> {
+    return this.apiService.get<LeaveType>(`codetable/leavetype`).pipe(
+      map(leaveType => this.autoMapperService.map(leaveType, LeaveTypeViewModel))
+    );
+  }
+
+
+  // Mostly, the following is code for the prototype interface
+  // 
 
   addOfficerSchedule(officerForm: OfficerForm): Observable<Officer> {
     return new Observable<Officer>((observer) => {

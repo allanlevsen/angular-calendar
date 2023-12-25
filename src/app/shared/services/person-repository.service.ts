@@ -7,38 +7,44 @@ import { AutoMapperService } from './auto-mapper.service';
 
 
 @Injectable({
-  providedIn: 'root'
+   providedIn: 'root'
 })
 export class PersonRepositoryService {
 
-  constructor(private apiService: ApiService, private autoMapperService: AutoMapperService) { }
+   constructor(private apiService: ApiService, private autoMapperService: AutoMapperService) { }
 
-  getPerson(personId: number): Observable<PersonViewModel> {
-    return this.apiService.get<Person>(`persons/${personId}`).pipe(
-      map(person => this.autoMapperService.map(person, PersonViewModel))
-    );
-  }
+   getPerson(personId: number): Observable<PersonViewModel> {
+      return this.apiService.get<Person>(`persons/${personId}`).pipe(
+         map(person => this.autoMapperService.map(person, PersonViewModel))
+      );
+   }
 
-  addPerson(newPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
-    const person = this.autoMapperService.map(newPersonViewModel, Person);
-    return this.apiService.post<Person>('persons', person).pipe(
-      map(responsePerson => this.autoMapperService.map(person, PersonViewModel))
-    );
-  }
+   getPersons(): Observable<PersonViewModel[]> {
+      return this.apiService.get<Person[]>('persons').pipe(
+         map(persons => persons.map(person => this.autoMapperService.map(person, PersonViewModel)))
+      );
+   }
 
-  updatePerson(personId: number, updatedPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
-    const person = this.autoMapperService.map(updatedPersonViewModel, Person);
-    return this.apiService.put<Person>(`persons/${personId}`, person).pipe(
-      map(responsePerson => this.autoMapperService.map(person, PersonViewModel))
-    );
-  }
+   addPerson(newPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
+      const person = this.autoMapperService.map(newPersonViewModel, Person);
+      return this.apiService.post<Person>('persons', person).pipe(
+         map(responsePerson => this.autoMapperService.map(person, PersonViewModel))
+      );
+   }
 
-  deletePerson(personId: number): Observable<PersonViewModel> {
-    // Assuming the delete API returns the deleted Person object
-    return this.apiService.delete<Person>(`persons/${personId}`).pipe(
-      map(person => this.autoMapperService.map(person, PersonViewModel))
-    );
-  }
+   updatePerson(personId: number, updatedPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
+      const person = this.autoMapperService.map(updatedPersonViewModel, Person);
+      return this.apiService.put<Person>(`persons/${personId}`, person).pipe(
+         map(responsePerson => this.autoMapperService.map(person, PersonViewModel))
+      );
+   }
+
+   deletePerson(personId: number): Observable<PersonViewModel> {
+      // Assuming the delete API returns the deleted Person object
+      return this.apiService.delete<Person>(`persons/${personId}`).pipe(
+         map(person => this.autoMapperService.map(person, PersonViewModel))
+      );
+   }
 }
 
 
@@ -80,7 +86,7 @@ export class PersonRepositoryService {
          });
 
          Explanation:
-         
+
             - The subscribe method now takes an object with next, error, 
               and complete properties. Each property is a function that handles the 
               corresponding part of the subscription.

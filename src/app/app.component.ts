@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
     // getPerson Example
 
     this.personRepo.getPerson(1).subscribe(
-        person => {
+        (person: PersonViewModel) => {
           console.log('Person:', person);
         },
         error => {

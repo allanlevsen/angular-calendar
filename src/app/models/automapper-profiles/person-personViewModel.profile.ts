@@ -1,6 +1,6 @@
 import { PersonViewModel } from "../person-viewModel.model";
 import { Person } from "../person.model";
-import { IMapper } from "./IMapper.interface";
+import { IMapper } from "../IMapper.interface";
 
 
  export class PersonToViewModelMapper implements IMapper<Person, PersonViewModel> {

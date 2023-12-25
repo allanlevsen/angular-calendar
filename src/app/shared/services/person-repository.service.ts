@@ -11,55 +11,42 @@ import { AutoMapperService } from './auto-mapper.service';
 })
 export class PersonRepositoryService {
 
-
-   // Mapping from Person to PersonViewModel
-   //
-   //const personViewModel = this.autoMapper.map(person, PersonViewModel);
-
-   // Mapping from PersonViewModel to Person
-   //
-   // const person = this.autoMapper.map(personViewModel, Person);
-
   constructor(private apiService: ApiService, private autoMapperService: AutoMapperService) { }
-
-  private mapToPersonViewModel(person: Person): PersonViewModel {
-    return this.autoMapperService.map(person, PersonViewModel);
-  }
-
-  private mapToPerson(personViewModel: PersonViewModel): Person {
-   return this.autoMapperService.map(personViewModel, Person);
-  }
 
   getPerson(personId: number): Observable<PersonViewModel> {
     return this.apiService.get<Person>(`persons/${personId}`).pipe(
-      map(person => this.mapToPersonViewModel(person))
+      map(person => this.autoMapperService.map(person, PersonViewModel))
     );
   }
 
   addPerson(newPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
-    const person = this.mapToPerson(newPersonViewModel);
+    const person = this.autoMapperService.map(newPersonViewModel, Person);
     return this.apiService.post<Person>('persons', person).pipe(
-      map(responsePerson => this.mapToPersonViewModel(responsePerson))
+      map(responsePerson => this.autoMapperService.map(person, PersonViewModel))
     );
   }
 
   updatePerson(personId: number, updatedPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
-    const person = this.mapToPerson(updatedPersonViewModel);
+    const person = this.autoMapperService.map(updatedPersonViewModel, Person);
     return this.apiService.put<Person>(`persons/${personId}`, person).pipe(
-      map(responsePerson => this.mapToPersonViewModel(responsePerson))
+      map(responsePerson => this.autoMapperService.map(person, PersonViewModel))
     );
   }
 
   deletePerson(personId: number): Observable<PersonViewModel> {
     // Assuming the delete API returns the deleted Person object
     return this.apiService.delete<Person>(`persons/${personId}`).pipe(
-      map(person => this.mapToPersonViewModel(person))
+      map(person => this.autoMapperService.map(person, PersonViewModel))
     );
   }
 }
 
 
 // Examples calling this repository service
+// 
+// NOTE: these examples are compatable with Angular 10 and older versions of RxJS
+//
+// WHEN: upgrading to later versions of RxJs, the subscribe is changed and 
 
 /*
 
@@ -67,15 +54,43 @@ export class PersonRepositoryService {
          //
 
          getPersonExample() {
-         this.personRepo.getPerson(1).subscribe(
-            person => {
+            this.personRepo.getPerson(1).subscribe(
+               person => {
+                  console.log('Person:', person);
+               },
+               error => {
+                  console.error('Error:', error);
+               }
+            );
+         }
+
+         // Angular 17 and the latest version of RxJS would look like this:
+         //
+
+         this.personRepo.getPerson(1).subscribe({
+            next: (person: PersonViewModel) => {
                console.log('Person:', person);
             },
-            error => {
+            error: error => {
                console.error('Error:', error);
+            },
+            complete: () => {
+               console.log('Completed');
             }
-         );
-         }
+         });
+
+         Explanation:
+         
+            - The subscribe method now takes an object with next, error, 
+              and complete properties. Each property is a function that handles the 
+              corresponding part of the subscription.
+
+            - next is called with each emitted value (in your case, a PersonViewModel).
+            - error is called if the Observable encounters an error.
+            - complete is called when the Observable completes (this is optional and 
+              often omitted if you don't need to perform any action on completion).
+
+
 
 
          // Example of adding a person

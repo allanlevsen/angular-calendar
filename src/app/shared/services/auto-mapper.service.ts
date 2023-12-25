@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { IMapper } from '../../models/automapper-profiles/IMapper.interface';
+import { IMapper } from '../../models/IMapper.interface';
 
 @Injectable({
    providedIn: 'root'

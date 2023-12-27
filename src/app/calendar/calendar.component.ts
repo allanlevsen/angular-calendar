@@ -1,5 +1,6 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core';
-import { Leave, Officer } from '../models/officer.model';
+import { Officer } from '../models/officer.model';
+import { Leave } from "../models/leave.model";
 
 interface DayValue {
   date: Date;

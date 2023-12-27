@@ -47,9 +47,28 @@ export class MockBackendInterceptor implements HttpInterceptor {
          const personId = parseInt(url.split('/').pop());
          return this.deletePerson(personId);
       }
+      if (url.endsWith('/codetable/leavetypes') && method === 'GET') {
+         return this.getLeaveTypes();
+      }
 
       // Forward any non-mock requests
       return next.handle(request);
+   }
+
+   private getLeaveTypes(): Observable<HttpEvent<any>> {
+
+      const leaveTypes = [
+         { id: 1, description: '', name: 'First Watch', code: 'F' },
+         { id: 2, description: '', name: 'Second Watch', code: 'S' },
+         { id: 3, description: '', name: 'Third Watch', code: 'T' },
+         { id: 4, description: '', name: 'Day Off', code: 'D' },
+         { id: 5, description: '', name: 'Holiday', code: 'H' },
+         { id: 6, description: '', name: 'Course', code: 'C' },
+         { id: 7, description: '', name: 'Maternity Leave', code: 'M' },
+         { id: 8, description: '', name: 'Unavailable', code: 'U' }
+       ];  
+
+      return of(new HttpResponse({ status: 200, body: leaveTypes }));
    }
 
    private addPerson(person: Person): Observable<HttpEvent<any>> {

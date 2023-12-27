@@ -1,4 +1,4 @@
-import { Leave } from "./officer.model";
+import { Leave } from "./leave.model";
 
 export class OfficerViewModel {
    id: number;

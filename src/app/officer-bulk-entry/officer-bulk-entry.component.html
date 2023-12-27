@@ -4,7 +4,7 @@
          <div class="col-md-2 mb-3">
             <label for="agencyCode" class="form-label">Agency</label>
             <select class="form-select" id="agencyCode" required name="agency" placeholder="Agency"
-               [(ngModel)]="officerForm.agency">
+               [(ngModel)]="officerLeave.agency">
                <option selected value="">Select agency</option>
                <option selected value="EPS">EPS - Edmonton Police Agency</option>
                <option selected value="CPS">CPS - Calgary Police Agency</option>
@@ -13,24 +13,24 @@
          <div class="col-md-2 mb-3">
             <label for="badgeNumber" class="form-label">Badge number</label>
             <input type="text" class="form-control" id="badgeNumber" required minlength="10" name="badge"
-               placeholder="Badge Number" [(ngModel)]="officerForm.badgeNumber" name="badgeNumber"
+               placeholder="Badge Number" [(ngModel)]="officerLeave.badgeNumber" name="badgeNumber"
                #badgeNumber="ngModel">
          </div>
          <div class="col-md-2 mb-3">
             <label for="fromDate" class="form-label">Start date</label>
             <input type="date" class="form-control" id="fromDate" required placeholder="" name="fromDate"
-               [(ngModel)]="officerForm.startDate">
+               [(ngModel)]="officerLeave.startDate">
          </div>
          <div class="col-md-2 mb-3">
             <label for="toDate" class="form-label">End date</label>
             <input type="date" class="form-control" id="toDate" required placeholder="" name="toDate"
-               [(ngModel)]="officerForm.endDate">
+               [(ngModel)]="officerLeave.endDate">
          </div>
          <div class="col-md-2 mb-3">
             <label for="leaveType" class="form-label">Type of leave</label>
-            <select class="form-select" id="leaveType" required name="leave" [(ngModel)]="officerForm.leaveName">
+            <select class="form-select" id="leaveType" required name="leave" [(ngModel)]="officerLeave.leaveTypeName">
                <option selected value="">Select</option>
-               <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">{{option.DisplayName}}
+               <option value="{{leaveType.name}}" *ngFor="let leaveType of leaveTypes">{{leaveType.name}}
                </option>
             </select>
          </div>
@@ -95,8 +95,8 @@
                   <td class="action-icon"></td>
                   <td class="column-leave-type">
                      <select name="leaveName" [(ngModel)]="editingLeave.leaveName" required>
-                        <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">
-                           {{option.DisplayName}}</option>
+                        <option value="{{leaveType.name}}" *ngFor="let leaveType of leaveTypes">
+                           {{leaveType.name}}</option>
                      </select>
                   </td>
                   <td class="column-start-date">
@@ -138,8 +138,8 @@
                <td class="action-icon"></td>
                <td class="column-leave-type">
                   <select name="leaveName" [(ngModel)]="editingLeave.leaveName" required>
-                     <option value="{{option.DisplayName}}" *ngFor="let option of scheduleOptions">
-                        {{option.DisplayName}}</option>
+                     <option value="{{leaveType.name}}" *ngFor="let leaveType of leaveTypes">
+                        {{leaveType.name}}</option>
                   </select>
                </td>
                <td class="column-start-date">

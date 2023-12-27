@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
-import { Leave, LeaveForm, Officer, OfficerForm, ScheduleOption } from '../models/officer.model';
+import { Component, OnInit } from '@angular/core';
+import { Officer } from '../models/officer.model';
+import { LeaveForm } from "../models/leave-form.model";
+import { Leave } from "../models/leave.model";
+import { OfficerLeave } from "../models/officer-leave.model";
 import { SchedulingService } from '../shared/services/scheduling.service';
+import { LeaveTypeViewModel } from '../models/leave-type-viewModel.model';
 
 
 @Component({
@@ -8,7 +12,7 @@ import { SchedulingService } from '../shared/services/scheduling.service';
   templateUrl: './officer-bulk-entry.component.html',
   styleUrls: ['./officer-bulk-entry.component.css']
 })
-export class OfficerBulkEntryComponent {
+export class OfficerBulkEntryComponent implements OnInit {
 
   // various types, constants, array data
   //
@@ -23,21 +27,11 @@ export class OfficerBulkEntryComponent {
     ])
   ];
 
-  scheduleOptions: ScheduleOption[] = [
-    { DisplayName: 'First Watch', DataValue: 'F', CategoryTypeColor: '#acc5ff' },
-    { DisplayName: 'Second Watch', DataValue: 'S', CategoryTypeColor: '#acc5ff' },
-    { DisplayName: 'Third Watch', DataValue: 'T', CategoryTypeColor: '#acc5ff' },
-    { DisplayName: 'Day Off', DataValue: 'D', CategoryTypeColor: '#f97a7a' },
-    { DisplayName: 'Holiday', DataValue: 'H', CategoryTypeColor: '#f9d77a' },
-    { DisplayName: 'Course', DataValue: 'C', CategoryTypeColor: '#7ae8f9' },
-    { DisplayName: 'Maternity Leave', DataValue: 'M', CategoryTypeColor: '#7af9d5' },
-    { DisplayName: 'Extended Leave', DataValue: 'L', CategoryTypeColor: '#b57af9' },
-    { DisplayName: 'Unavailable', DataValue: 'U', CategoryTypeColor: '#919191' }
-  ];  
+  leaveTypes: LeaveTypeViewModel[];
 
   // add officer form related variables
   //
-  officerForm: OfficerForm = new OfficerForm();
+  officerLeave: OfficerLeave = new OfficerLeave();
   submitted = false;
 
   // Inline Leave variables
@@ -54,6 +48,11 @@ export class OfficerBulkEntryComponent {
   constructor(private schedulingService: SchedulingService) {
   }
 
+  ngOnInit(): void {
+    this.schedulingService.getLeaveTypes().subscribe( leaveTypes => {
+      leaveTypes = leaveTypes;
+    });
+  }
 
   ////////////////////////////////////////////////////////////
   //
@@ -63,18 +62,32 @@ export class OfficerBulkEntryComponent {
   onSubmit() { 
     this.submitted = true; 
 
-    const badgeNumbersArray = this.officerForm.badgeNumber.split(',').map(num => num.trim());
+    const badgeNumbersArray = this.officerLeave.badgeNumber.split(',').map(num => num.trim());
     badgeNumbersArray.forEach(badgeNumber => {
       if (badgeNumber) {
-        const officerDetails: OfficerForm = {
-          agency: this.officerForm.agency,
-          badgeNumber: badgeNumber,
-          startDate: this.officerForm.startDate,
-          endDate: this.officerForm.endDate,
-          leaveName: this.officerForm.leaveName
-        };
-        let officer = this.createNewOfficer(officerDetails);
-        console.log(officer);
+
+        // search database given the agency and badge number...
+        this.schedulingService.getOfficer(this.officerLeave.agency, badgeNumber).subscribe(o => {
+
+          const officerDetails: OfficerLeave = {
+            officerId: o.id,
+            firstName: o.firstName,
+            lastName: o.lastName,
+            badgeNumber: badgeNumber,
+            agencyId: this.officerLeave.agencyId,
+            agency: this.officerLeave.agency,
+            startDate: this.officerLeave.startDate,
+            endDate: this.officerLeave.endDate,
+            leaveTypeId: this.officerLeave.leaveTypeId,
+            leaveTypeCode: this.officerLeave.leaveTypeCode,
+            leaveTypeName: this.officerLeave.leaveTypeName
+          };
+          let officer = this.createNewOfficer(officerDetails);
+          console.log(officer);
+
+        });
+
+
       }
     });
 
@@ -311,12 +324,12 @@ export class OfficerBulkEntryComponent {
   // Database related functions
   //
 
-  createNewOfficer(officerForm: OfficerForm) : Officer {
-    officerForm.startDate = this.getScheduleDate(officerForm.startDate);
-    officerForm.endDate = this.getScheduleDate(officerForm.endDate);
+  createNewOfficer(officerLeave: OfficerLeave) : Officer {
+    officerLeave.startDate = this.getScheduleDate(officerLeave.startDate);
+    officerLeave.endDate = this.getScheduleDate(officerLeave.endDate);
 
     this.schedulingService
-        .addOfficerSchedule(officerForm)
+        .addOfficerSchedule(officerLeave)
         .subscribe( o => {
           this.addOfficerToList(o);
           return o;

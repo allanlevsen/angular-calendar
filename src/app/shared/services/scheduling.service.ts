@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Observable, map, of } from 'rxjs';
 
-import { Officer, Leave, OfficerForm } from 'src/app/models/officer.model';
+import { Officer } from 'src/app/models/officer.model';
+import { Leave } from "src/app/models/leave.model";
+import { OfficerForm } from "src/app/models/officer-form.model";
 import { ApiService } from './api.service';
 import { Person } from 'src/app/models/person.model';
 import { OfficerViewModel } from 'src/app/models/officer-viewModel.model';
 import { AutoMapperService } from './auto-mapper.service';
 import { LeaveTypeViewModel } from 'src/app/models/leave-type-viewModel.model';
 import { LeaveType } from 'src/app/models/leave-type.model';
+import { OfficerLeave } from 'src/app/models/officer-leave.model';
 
 type FullName = {
   firstName: string;
@@ -34,6 +37,8 @@ export class SchedulingService {
 
   constructor(private apiService: ApiService, private autoMapperService: AutoMapperService) { }
 
+  ///////////////////////////////////////////////////////////////////////////////////
+  //
   // api service methods needed to connect to backend
   //
 
@@ -43,45 +48,65 @@ export class SchedulingService {
     );
   }
   
+
+  // services to get a list of Leave types
+  //
+
   getLeaveTypes(): Observable<LeaveTypeViewModel> {
-    return this.apiService.get<LeaveType>(`codetable/leavetype`).pipe(
+    return this.apiService.get<LeaveType>(`codetable/leavetypes`).pipe(
       map(leaveType => this.autoMapperService.map(leaveType, LeaveTypeViewModel))
     );
   }
 
+  addOrUpdateOfficerLeave(officerLeave: OfficerLeave): Observable<OfficerLeave>  {
+    return this.apiService.post<OfficerLeave>('officerLeave', officerLeave).pipe(
+      map(officerLeave => this.autoMapperService.map(officerLeave, OfficerLeave))
+    );
+  }
 
-  // Mostly, the following is code for the prototype interface
-  // 
-
-  addOfficerSchedule(officerForm: OfficerForm): Observable<Officer> {
+  addOfficerSchedule(officerLeave: OfficerLeave): Observable<Officer> {
     return new Observable<Officer>((observer) => {
       try {
-        // Temporary: Create a fake Id
-        let id = this.getSecondsSince6AM();
-        
-        let newOfficer = new Officer(id, 
-          officerForm.agency, 
-          officerForm.badgeNumber, 
-          this.getRandomName().firstName, // Assuming getRandomName() returns "lastName, firstName"
-          this.getRandomName().lastName, 
-          []);
-        let newLeave = new Leave(id + 1, 
-          officerForm.startDate, 
-          officerForm.endDate, 
-          officerForm.leaveName[0].toUpperCase(), 
-          officerForm.leaveName);
-        
-        newOfficer.leaves.push(newLeave);
 
-        observer.next(newOfficer); // Emit the new officer
-        observer.complete();       // Close the observable stream
+        this.addOrUpdateOfficerLeave(officerLeave).subscribe( officerLeave => {
+
+          let newOfficer = new Officer(
+            officerLeave.officerId, 
+            officerLeave.agency, 
+            officerLeave.badgeNumber, 
+            officerLeave.firstName,
+            officerLeave.lastName, 
+            []);
+          let newLeave = new Leave(
+            officerLeave.leaveTypeId, 
+            officerLeave.startDate, 
+            officerLeave.endDate, 
+            officerLeave.leaveTypeCode,
+            officerLeave.leaveTypeName
+          );         
+          newOfficer.leaves.push(newLeave);
+
+          observer.next(newOfficer); // Emit the new officer
+          observer.complete();       // Close the observable stream
+        });
       } catch (error) {
         observer.error(error);     // Emit an error if something goes wrong
       }
     });
   }
 
+  //
+  // 
+  //
+  ///////////////////////////////////////////////////////////////////////////////////
 
+
+
+  ///////////////////////////////////////////////////////////////////////////////////
+  //
+  // Mostly, the following is code for the prototype interface
+  // Generating id numbers, creating officers and leaves etc
+  //
 
 
 

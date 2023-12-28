@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpRequest, HttpResponse, HTTP_INTERCEPTORS, HttpHandler } from '@angular/common/http';
 import { Observable, of, mergeMap } from 'rxjs';
 import { Person } from '../../models/person.model'; // Adjust the path as necessary
+import { LeaveType } from 'src/app/models/leave-type.model';
+import { OfficerLeave } from 'src/app/models/officer-leave.model';
 
 
 @Injectable()
@@ -12,6 +14,8 @@ export class MockBackendInterceptor implements HttpInterceptor {
       new Person(2, 'Jane', 'Doe', new Date('1991-02-01'), 'jane.doe@example.com')
       // ... other mock persons
    ];
+
+   private officerLeaves: OfficerLeave[] = [];
 
    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
       // Simulate a network delay
@@ -47,9 +51,13 @@ export class MockBackendInterceptor implements HttpInterceptor {
          const personId = parseInt(url.split('/').pop());
          return this.deletePerson(personId);
       }
-      if (url.endsWith('/codetable/leavetypes') && method === 'GET') {
+      else if (url.endsWith('/codetable/leavetypes') && method === 'GET') {
          return this.getLeaveTypes();
       }
+      else if (url.endsWith('officerLeave') && method === 'POST') {
+         return this.addOfficerLeave(body);
+      }
+      
 
       // Forward any non-mock requests
       return next.handle(request);
@@ -58,18 +66,27 @@ export class MockBackendInterceptor implements HttpInterceptor {
    private getLeaveTypes(): Observable<HttpEvent<any>> {
 
       const leaveTypes = [
-         { id: 1, description: '', name: 'First Watch', code: 'F' },
-         { id: 2, description: '', name: 'Second Watch', code: 'S' },
-         { id: 3, description: '', name: 'Third Watch', code: 'T' },
-         { id: 4, description: '', name: 'Day Off', code: 'D' },
-         { id: 5, description: '', name: 'Holiday', code: 'H' },
-         { id: 6, description: '', name: 'Course', code: 'C' },
-         { id: 7, description: '', name: 'Maternity Leave', code: 'M' },
-         { id: 8, description: '', name: 'Unavailable', code: 'U' }
-       ];  
+         new LeaveType(1, 'First Watch', 'F', 'First Watch Description', null),
+         new LeaveType(2, 'Second Watch', 'S', 'Second Watch Description', null),
+         new LeaveType(3, 'Third Watch', 'T', 'Third Watch Description', null),
+         new LeaveType(4, 'Day Off', 'D', 'Day Off Description', null),
+         new LeaveType(5, 'Holiday', 'H', 'Holiday Description', null),
+         new LeaveType(6, 'Course', 'C', 'Course Description', null),
+         new LeaveType(7, 'Maternity Leave', 'M', 'Maternity Leave Description', null),
+         new LeaveType(8, 'Unavailable', 'U', 'Unavailable Description', null)
+       ];
 
       return of(new HttpResponse({ status: 200, body: leaveTypes }));
    }
+
+   private addOfficerLeave(officerLeave: OfficerLeave): Observable<HttpEvent<any>> {
+      const newId = this.officerLeaves.length > 0 ? Math.max(...this.officerLeaves.map(p => p.officerLeaveId)) + 1 : 1;
+      officerLeave.officerLeaveId = newId;
+      this.officerLeaves.push(officerLeave);
+      return of(new HttpResponse({ status: 200, body: officerLeave }));
+   }
+
+
 
    private addPerson(person: Person): Observable<HttpEvent<any>> {
       const newId = this.persons.length > 0 ? Math.max(...this.persons.map(p => p.personId)) + 1 : 1;

@@ -4,6 +4,7 @@
 
 export class OfficerLeave {
 
+   public officerLeaveId: number;
    public officerId: number;
    public firstName: string;
    public lastName: string;

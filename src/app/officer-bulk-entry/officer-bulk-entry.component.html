@@ -29,7 +29,6 @@
          <div class="col-md-2 mb-3">
             <label for="leaveType" class="form-label">Type of leave</label>
             <select class="form-select" id="leaveType" required name="leave" [(ngModel)]="officerLeave.leaveTypeName">
-               <option selected value="">Select</option>
                <option value="{{leaveType.name}}" *ngFor="let leaveType of leaveTypes">{{leaveType.name}}
                </option>
             </select>

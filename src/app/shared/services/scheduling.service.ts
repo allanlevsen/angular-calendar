@@ -42,25 +42,28 @@ export class SchedulingService {
   // api service methods needed to connect to backend
   //
 
+
+  // servie to get an officer
+  // refer to previously written code for this within JOIN 2
+  //
   getOfficer(agency: string, badgeNumber): Observable<OfficerViewModel> {
     return this.apiService.get<Officer>(`officer/${agency}/${badgeNumber}`).pipe(
-      map(officer => this.autoMapperService.map(officer, OfficerViewModel))
+      map(officer => this.autoMapperService.map(officer, OfficerViewModel) as OfficerViewModel)
     );
   }
   
 
   // services to get a list of Leave types
   //
-
-  getLeaveTypes(): Observable<LeaveTypeViewModel> {
-    return this.apiService.get<LeaveType>(`codetable/leavetypes`).pipe(
-      map(leaveType => this.autoMapperService.map(leaveType, LeaveTypeViewModel))
+  getLeaveTypes(): Observable<LeaveTypeViewModel[]> {
+    return this.apiService.get<LeaveType[]>(`codetable/leavetypes`).pipe(
+      map(leaveTypes => leaveTypes.map(leaveType => this.autoMapperService.map(leaveType, LeaveTypeViewModel) as LeaveTypeViewModel))
     );
   }
 
   addOrUpdateOfficerLeave(officerLeave: OfficerLeave): Observable<OfficerLeave>  {
     return this.apiService.post<OfficerLeave>('officerLeave', officerLeave).pipe(
-      map(officerLeave => this.autoMapperService.map(officerLeave, OfficerLeave))
+      map(response => this.autoMapperService.map(response, OfficerLeave) as OfficerLeave)
     );
   }
 
@@ -130,6 +133,9 @@ export class SchedulingService {
 
   // examples using the generic api service
   //
+
+  // the following code, however, is not required in JOIN 2
+  // and should be deleted
 
   // Get a person by ID
   getPerson(personId: number): void {

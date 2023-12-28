@@ -5,6 +5,7 @@ import { Leave } from "../models/leave.model";
 import { OfficerLeave } from "../models/officer-leave.model";
 import { SchedulingService } from '../shared/services/scheduling.service';
 import { LeaveTypeViewModel } from '../models/leave-type-viewModel.model';
+import { LeaveType } from '../models/leave-type.model';
 
 
 @Component({
@@ -50,7 +51,16 @@ export class OfficerBulkEntryComponent implements OnInit {
 
   ngOnInit(): void {
     this.schedulingService.getLeaveTypes().subscribe( leaveTypes => {
-      leaveTypes = leaveTypes;
+      this.leaveTypes = leaveTypes;
+
+      // add a select Leave Type into the first item of the array
+      // New LeaveType object to add
+      let selectLeaveType = new LeaveType(0, 'Select Type', '', 'Empty Leave Type', null);
+
+      // Add the new LeaveType to the beginning of the array
+      leaveTypes.unshift(selectLeaveType);
+      this.officerLeave.leaveTypeName = 'Select Type';
+
     });
   }
 
@@ -70,6 +80,7 @@ export class OfficerBulkEntryComponent implements OnInit {
         this.schedulingService.getOfficer(this.officerLeave.agency, badgeNumber).subscribe(o => {
 
           const officerDetails: OfficerLeave = {
+            officerLeaveId: 0,
             officerId: o.id,
             firstName: o.firstName,
             lastName: o.lastName,
@@ -90,7 +101,6 @@ export class OfficerBulkEntryComponent implements OnInit {
 
       }
     });
-
   }
 
   // This would be bound to the click event of the trash can icon in your template

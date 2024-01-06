@@ -63,12 +63,12 @@
             <ng-container
                *ngFor="let leave of officer.leaves; let isFirst = first; ; let last = last; let leaveIndex = index">
                <tr *ngIf="!isEditing(officer.id, leaveIndex)">
-                  <td *ngIf="isFirst; else emptyCell">{{ officer.lastName }}, {{ officer.firstName }}</td>
+                  <td *ngIf="isFirst; else emptyCell" title="{{ officer.id }}">{{ officer.lastName }}, {{ officer.firstName }}</td>
                   <td *ngIf="isFirst; else emptyCell">{{ officer.agency }}</td>
                   <td *ngIf="isFirst; else emptyCell">{{ officer.badgeNumber }}</td>
                   <td class="action-icon"><i class="fa-regular fa-calendar-days" title="Show Calendar"
                      (click)="onShowCalendar(officer.id, leaveIndex)"></i></td>
-                  <td class="column-leave-type">{{ leave.leaveName }}</td>
+                  <td class="column-leave-type" title="{{ leave.leaveId }}">{{ leave.leaveName }}</td>
                   <td class="column-start-date">{{ getScheduleDateString(leave.startDate) }}</td>
                   <td class="column-end-date">{{ getScheduleDateString(leave.endDate) }}</td>
                   <td class="action-icon"><i class="fa fa-edit" title="Edit Leave"

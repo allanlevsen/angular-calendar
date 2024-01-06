@@ -4,11 +4,32 @@ import { Observable, of, mergeMap } from 'rxjs';
 import { Person } from '../../models/person.model'; // Adjust the path as necessary
 import { LeaveType } from 'src/app/models/leave-type.model';
 import { OfficerLeave } from 'src/app/models/officer-leave.model';
+import { Officer } from 'src/app/models/officer.model';
 
+
+
+type FullName = {
+   firstName: string;
+   lastName: string;
+ };
+ 
+ const names: FullName[] = [
+   { firstName: 'Emma', lastName: 'Johnson' },
+   { firstName: 'Liam', lastName: 'Smith' },
+   { firstName: 'Olivia', lastName: 'Williams' },
+   { firstName: 'Noah', lastName: 'Brown' },
+   { firstName: 'Ava', lastName: 'Jones' },
+   { firstName: 'William', lastName: 'Garcia' },
+   { firstName: 'Isabella', lastName: 'Miller' },
+   { firstName: 'James', lastName: 'Davis' },
+   { firstName: 'Sophia', lastName: 'Rodriguez' },
+   { firstName: 'Logan', lastName: 'Martinez' }
+ ];
 
 @Injectable()
 export class MockBackendInterceptor implements HttpInterceptor {
 
+   
    private persons: Person[] = [
       new Person(1, 'John', 'Doe', new Date('1990-01-01'), 'john.doe@example.com'),
       new Person(2, 'Jane', 'Doe', new Date('1991-02-01'), 'jane.doe@example.com')
@@ -57,24 +78,36 @@ export class MockBackendInterceptor implements HttpInterceptor {
       else if (url.endsWith('officerLeave') && method === 'POST') {
          return this.addOfficerLeave(body);
       }
-      
+      else if ((url.includes('officer/EPS') || url.includes('officer/CPS')) && method === 'GET') {
+         const urlArray: string[] = url.split('/');
+         const badgeNumber = urlArray.pop();
+         const agency = urlArray.pop();
+         return this.getOfficer(agency, badgeNumber);
+      }
+
 
       // Forward any non-mock requests
       return next.handle(request);
    }
 
+   private getRandomName(): FullName {
+      const randomIndex = Math.floor(Math.random() * names.length);
+      const randomName = names[randomIndex];
+      return randomName;
+    }
+
    private getLeaveTypes(): Observable<HttpEvent<any>> {
 
       const leaveTypes = [
-         new LeaveType(1, 'First Watch', 'F', 'First Watch Description', null),
-         new LeaveType(2, 'Second Watch', 'S', 'Second Watch Description', null),
-         new LeaveType(3, 'Third Watch', 'T', 'Third Watch Description', null),
-         new LeaveType(4, 'Day Off', 'D', 'Day Off Description', null),
-         new LeaveType(5, 'Holiday', 'H', 'Holiday Description', null),
-         new LeaveType(6, 'Course', 'C', 'Course Description', null),
-         new LeaveType(7, 'Maternity Leave', 'M', 'Maternity Leave Description', null),
-         new LeaveType(8, 'Unavailable', 'U', 'Unavailable Description', null)
-       ];
+         new LeaveType({id: 1, name: 'First Watch', code: 'F', description: 'First Watch Description', backgroundColor: null}),
+         new LeaveType({id: 2, name: 'Second Watch', code: 'S', description: 'Second Watch Description', backgroundColor: null}),
+         new LeaveType({id: 3, name: 'Third Watch', code: 'T', description: 'Third Watch Description', backgroundColor: null}),
+         new LeaveType({id: 4, name: 'Day Off', code: 'D', description: 'Day Off Description', backgroundColor: null}),
+         new LeaveType({id: 5, name: 'Holiday', code: 'H', description: 'Holiday Description', backgroundColor: null}),
+         new LeaveType({id: 6, name: 'Course', code: 'C', description: 'Course Description', backgroundColor: null}),
+         new LeaveType({id: 7, name: 'Maternity Leave', code: 'M', description: 'Maternity Leave Description', backgroundColor: null}),
+         new LeaveType({id: 8, name: 'Unavailable', code: 'U', description: 'Unavailable Description', backgroundColor: null})
+      ];
 
       return of(new HttpResponse({ status: 200, body: leaveTypes }));
    }
@@ -83,13 +116,27 @@ export class MockBackendInterceptor implements HttpInterceptor {
       const newId = this.officerLeaves.length > 0 ? Math.max(...this.officerLeaves.map(p => p.officerLeaveId)) + 1 : 1;
       officerLeave.officerLeaveId = newId;
       this.officerLeaves.push(officerLeave);
-      return of(new HttpResponse({ status: 200, body: officerLeave }));
+      return of(new HttpResponse({ status: 200, body: officerLeave as OfficerLeave }));
    }
 
+   private getOfficer(agencyCode: string, officerBadgeNumber: string): Observable<HttpEvent<any>> {
+      const newId = this.officerLeaves.length > 0 ? Math.max(...this.officerLeaves.map(p => p.officerLeaveId)) + 1 : 1;
+      const newName: FullName = this.getRandomName();
 
+      let newOfficer: Officer = new Officer({
+         id: newId,
+         agency: agencyCode,
+         badgeNumber: officerBadgeNumber,
+         firstName: newName.firstName,
+         lastName: newName.lastName,
+         leaves: []
+      });
+
+      return of(new HttpResponse({ status: 200, body: newOfficer as Officer }));
+   }
 
    private addPerson(person: Person): Observable<HttpEvent<any>> {
-      const newId = this.persons.length > 0 ? Math.max(...this.persons.map(p => p.personId)) + 1 : 1;
+      const newId = this.persons.length > 0 ? Math.max(...this.persons.map(p => p.personId)) + 1 :  1;
       person.personId = newId;
       this.persons.push(person);
       return of(new HttpResponse({ status: 200, body: person }));

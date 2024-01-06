@@ -31,7 +31,7 @@ export class CalendarComponent implements OnInit {
   @Input() readonly: boolean = true;
   @Input() showcolor: boolean = true;
   weeks: CalendarDay[][] = [];
-  dayValues: DayValue[] = []; // This should be provided with the actual values
+  dayValues: DayValue[] = []; 
 
   scheduleOptions: ScheduleOption[] = [
     { DisplayName: 'First Watch', DataValue: 'F', CategoryTypeColor: '#acc5ff' },
@@ -66,10 +66,13 @@ export class CalendarComponent implements OnInit {
   popupChangeDetector: boolean = true;
 
   // multiple day selecion capability
+  //
   selectedDays: Set<CalendarDay> = new Set();
   popupTop: string = '';
   popupLeft: string = '';
-  @HostListener('document:keydown.escape', ['$event']) // Listen for the escape key
+
+  // Listen for the escape key
+  @HostListener('document:keydown.escape', ['$event'])
 
   ngOnInit() {
 

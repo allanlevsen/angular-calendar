@@ -18,13 +18,13 @@ import { IMapper } from "../IMapper.interface";
  
  export class ViewModelToOfficerMapper implements IMapper<OfficerViewModel, Officer> {
    map(input: OfficerViewModel): Officer {
-      return new Officer(
-         input.id,
-         input.agency,
-         input.badgeNumber,
-         input.firstName,
-         input.lastName,
-         input.leaves
-      );
+      return new Officer({
+         id: input.id,
+         agency: input.agency,
+         badgeNumber: input.badgeNumber,
+         firstName: input.firstName,
+         lastName: input.lastName,
+         leaves: input.leaves
+      });
     }
  }

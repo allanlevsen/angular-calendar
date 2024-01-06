@@ -18,14 +18,14 @@ export class OfficerBulkEntryComponent implements OnInit {
   // various types, constants, array data
   //
   officers: Officer[] = [
-    new Officer(1, "Agency1", "BN001", "John", "Doe", []),
-    new Officer(2, "Agency2", "BN002", "Jane", "Smith", [
-      new Leave(2, new Date("2023-01-01"), new Date("2023-01-10"), "F", "First Watch")
-    ]),
-    new Officer(3, "Agency3", "BN003", "Alice", "Johnson", [
-      new Leave(3, new Date("2023-02-01"), new Date("2023-02-05"), "S", "Second Watch"),
-      new Leave(3, new Date("2023-03-01"), new Date("2023-03-10"), "H", "Holiday")
-    ])
+    // new Officer({id: 1, agency: "Agency1", badgeNumber: "BN001", firstName: "John", lastName: "Doe", leaves: []}),
+    // new Officer({2, "Agency2", "BN002", "Jane", "Smith", [
+    //   new Leave(2, new Date("2023-01-01"), new Date("2023-01-10"), "F", "First Watch")
+    // ]}),
+    // new Officer({3, "Agency3", "BN003", "Alice", "Johnson", [
+    //   new Leave(3, new Date("2023-02-01"), new Date("2023-02-05"), "S", "Second Watch"),
+    //   new Leave(3, new Date("2023-03-01"), new Date("2023-03-10"), "H", "Holiday")
+    // ]})
   ];
 
   leaveTypes: LeaveTypeViewModel[];
@@ -55,7 +55,7 @@ export class OfficerBulkEntryComponent implements OnInit {
 
       // add a select Leave Type into the first item of the array
       // New LeaveType object to add
-      let selectLeaveType = new LeaveType(0, 'Select Type', '', 'Empty Leave Type', null);
+      let selectLeaveType = new LeaveType({id: 0, name: 'Select Type', code: '', description: 'Empty Leave Type', backgroundColor: null});
 
       // Add the new LeaveType to the beginning of the array
       leaveTypes.unshift(selectLeaveType);
@@ -74,36 +74,42 @@ export class OfficerBulkEntryComponent implements OnInit {
 
     const badgeNumbersArray = this.officerLeave.badgeNumber.split(',').map(num => num.trim());
     badgeNumbersArray.forEach(badgeNumber => {
+
+      // We are iterating through each of the badge numbers entered
+      // if the badgeNumber is valid
+      //
       if (badgeNumber) {
 
         // search database given the agency and badge number...
-        this.schedulingService.getOfficer(this.officerLeave.agency, badgeNumber).subscribe(o => {
+        // TODO: we need to catch an error if the officer is not found
+        //       or if there is an error on the API
+        //
+        this.schedulingService.getOfficer(this.officerLeave.agency, badgeNumber)
+                              .subscribe(officer => {
 
-          const officerDetails: OfficerLeave = {
+          const officerLeave: OfficerLeave = new OfficerLeave({
             officerLeaveId: 0,
-            officerId: o.id,
-            firstName: o.firstName,
-            lastName: o.lastName,
+            officerId: officer.id,
+            firstName: officer.firstName,
+            lastName: officer.lastName,
             badgeNumber: badgeNumber,
-            agencyId: this.officerLeave.agencyId,
+            agencyId: 0, // we should get this from the localStorage list
             agency: this.officerLeave.agency,
-            startDate: this.officerLeave.startDate,
-            endDate: this.officerLeave.endDate,
-            leaveTypeId: this.officerLeave.leaveTypeId,
-            leaveTypeCode: this.officerLeave.leaveTypeCode,
+            startDate: this.getScheduleDate(this.officerLeave.startDate),
+            endDate: this.getScheduleDate(this.officerLeave.endDate),
+            leaveTypeCode: this.officerLeave.leaveTypeName[0], // we should get this from the localStorage list
             leaveTypeName: this.officerLeave.leaveTypeName
-          };
-          let officer = this.createNewOfficer(officerDetails);
-          console.log(officer);
-
+          });
+          this.schedulingService.addOfficerSchedule(officerLeave).subscribe( officerLeave => {
+            this.addOfficerToList(officerLeave);
+          });
         });
-
 
       }
     });
   }
 
-  // This would be bound to the click event of the trash can icon in your template
+
   onDeleteClick(officerId: number): void {
     this.deleteOfficerById(officerId);
   }
@@ -116,13 +122,14 @@ export class OfficerBulkEntryComponent implements OnInit {
   onAddLeave( officerId: number, event: Event): void {
     event.preventDefault(); 
 
-    const newLeave = new Leave(
-      this.schedulingService.getSecondsSince6AM(),
-      this.getScheduleDate(this.editingLeave.startDate),
-      this.getScheduleDate(this.editingLeave.endDate),
-      this.editingLeave.leaveName[0].toUpperCase(),
-      this.editingLeave.leaveName
-    );
+    const newLeave = new Leave({
+      leaveId: this.schedulingService.getGeneratedId(),
+      officerId: officerId,
+      startDate: this.getScheduleDate(this.editingLeave.startDate),
+      endDate: this.getScheduleDate(this.editingLeave.endDate),
+      leaveCode: this.editingLeave.leaveName[0].toUpperCase(),
+      leaveName: this.editingLeave.leaveName
+    });
     const officer = this.officers.find(o => o.id === officerId);
     if (officer) {
       officer.leaves.push(newLeave);
@@ -143,6 +150,7 @@ export class OfficerBulkEntryComponent implements OnInit {
     this.editingLeaveIndex = leaveIndex;
     this.editingLeave = this.getLeaveEditingForm();
     this.editingLeave.leaveName = leave.leaveName;
+    this.editingLeave.leaveCode = leave.leaveCode;
     this.editingLeave.startDate = this.getScheduleDateString(leave.startDate);
     this.editingLeave.endDate = this.getScheduleDateString(leave.endDate);
   }
@@ -167,6 +175,7 @@ export class OfficerBulkEntryComponent implements OnInit {
     event.preventDefault();
     const officer = this.officers.find(o => o.id === officerId);
     if (officer && officer.leaves[leaveIndex]) {
+      officer.leaves[leaveIndex].leaveCode = this.editingLeave.leaveName[0].toUpperCase()
       officer.leaves[leaveIndex].leaveName = this.editingLeave.leaveName
       officer.leaves[leaveIndex].startDate = this.getScheduleDate(this.editingLeave.startDate);
       officer.leaves[leaveIndex].endDate = this.getScheduleDate(this.editingLeave.endDate);
@@ -326,26 +335,6 @@ export class OfficerBulkEntryComponent implements OnInit {
     this.editingOfficerId = null;
     this.editingLeaveIndex = null;
     this.clearLeaveEditingForm();
-  }
-
-
-  ////////////////////////////////////////////////////////////
-  //
-  // Database related functions
-  //
-
-  createNewOfficer(officerLeave: OfficerLeave) : Officer {
-    officerLeave.startDate = this.getScheduleDate(officerLeave.startDate);
-    officerLeave.endDate = this.getScheduleDate(officerLeave.endDate);
-
-    this.schedulingService
-        .addOfficerSchedule(officerLeave)
-        .subscribe( o => {
-          this.addOfficerToList(o);
-          return o;
-        });
-
-    return null;
   }
 
 

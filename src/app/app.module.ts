@@ -16,6 +16,7 @@ import { MockBackendInterceptor } from './shared/services/mock-backend-intercept
 import { ApiService } from './shared/services/api.service';
 import { PersonRepositoryService } from './shared/services/person-repository.service';
 import { AutoMapperService } from './shared/services/auto-mapper.service';
+import { LeaveStylingService } from './shared/services/leave-styling.service';
 
 
 @NgModule({
@@ -39,6 +40,7 @@ import { AutoMapperService } from './shared/services/auto-mapper.service';
     PersonRepositoryService,
     MockBackendInterceptor,
     AutoMapperService,
+    LeaveStylingService,
 
     { provide: HTTP_INTERCEPTORS, useClass: MockBackendInterceptor, multi: true },
 

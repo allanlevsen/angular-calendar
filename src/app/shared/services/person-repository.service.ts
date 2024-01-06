@@ -15,34 +15,34 @@ export class PersonRepositoryService {
 
    getPerson(personId: number): Observable<PersonViewModel> {
       return this.apiService.get<Person>(`persons/${personId}`).pipe(
-        map(person => this.autoMapperService.map(person, PersonViewModel) as PersonViewModel)
+         map(person => this.autoMapperService.map(person, PersonViewModel) as PersonViewModel)
       );
-    }
-    
-    getPersons(): Observable<PersonViewModel[]> {
+   }
+
+   getPersons(): Observable<PersonViewModel[]> {
       return this.apiService.get<Person[]>('persons').pipe(
-        map(persons => persons.map(person => this.autoMapperService.map(person, PersonViewModel) as PersonViewModel))
+         map(persons => persons.map(person => this.autoMapperService.map(person, PersonViewModel) as PersonViewModel))
       );
-    }    
+   }
 
    addPerson(newPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
       const person = this.autoMapperService.map(newPersonViewModel, Person);
       return this.apiService.post<Person>('persons', person).pipe(
-        map(responsePerson => this.autoMapperService.map(responsePerson, PersonViewModel) as PersonViewModel)
+         map(responsePerson => this.autoMapperService.map(responsePerson, PersonViewModel) as PersonViewModel)
       );
-    }
-    
-    updatePerson(personId: number, updatedPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
+   }
+
+   updatePerson(personId: number, updatedPersonViewModel: PersonViewModel): Observable<PersonViewModel> {
       const person = this.autoMapperService.map(updatedPersonViewModel, Person);
       return this.apiService.put<Person>(`persons/${personId}`, person).pipe(
-        map(responsePerson => this.autoMapperService.map(responsePerson, PersonViewModel) as PersonViewModel)
+         map(responsePerson => this.autoMapperService.map(responsePerson, PersonViewModel) as PersonViewModel)
       );
-    }
-    
-    deletePerson(personId: number): Observable<PersonViewModel> {
+   }
+
+   deletePerson(personId: number): Observable<PersonViewModel> {
       return this.apiService.delete<Person>(`persons/${personId}`).pipe(
-        map(person => this.autoMapperService.map(person, PersonViewModel) as PersonViewModel)
+         map(person => this.autoMapperService.map(person, PersonViewModel) as PersonViewModel)
       );
-    }
-    
+   }
+
 }

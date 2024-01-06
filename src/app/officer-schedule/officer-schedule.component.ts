@@ -10,7 +10,7 @@ import { Officer } from '../models/officer.model';
 export class OfficerScheduleComponent {
 
 
-  model = new Officer(1, 'EPS', '998-26381', 'Allan', 'Levsen', null);
+  model = new Officer({id: 1, agency: 'EPS', badgeNumber: '998-26381', firstName: 'Allan', lastName: 'Levsen', leaves: null});
   submitted = false;
 
   onSubmit() { this.submitted = true; }

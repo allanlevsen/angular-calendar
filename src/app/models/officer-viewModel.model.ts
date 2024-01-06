@@ -1,6 +1,7 @@
 import { Leave } from "./leave.model";
 
 export class OfficerViewModel {
+  isOfficerValid: boolean;
    id: number;
    firstName: string;
    lastName: string; // Using string for simplicity in this example

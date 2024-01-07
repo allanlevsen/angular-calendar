@@ -10,8 +10,8 @@ import { LeaveType } from '../models/leave-type.model';
 
 @Component({
   selector: 'officer-bulk-entry',
-  templateUrl: './officer-bulk-entry.component.html',
-  styleUrls: ['./officer-bulk-entry.component.css']
+  templateUrl: './officer-bulk-leave-entry.component.html',
+  styleUrls: ['./officer-bulk-leave-entry.component.css']
 })
 export class OfficerBulkEntryComponent implements OnInit {
 

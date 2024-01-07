@@ -1,6 +1,5 @@
-
-
 export class LeaveForm {
+
   public leaveName: string;
   public startDate: string;
   public endDate: string;
@@ -9,5 +8,4 @@ export class LeaveForm {
   constructor(init?: Partial<LeaveForm>) {
     Object.assign(this, init);
   }
-
 }

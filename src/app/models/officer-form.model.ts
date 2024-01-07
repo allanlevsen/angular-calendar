@@ -1,5 +1,3 @@
-
-
 export class OfficerForm {
 
   public agency: string;
@@ -8,4 +6,7 @@ export class OfficerForm {
   public endDate: Date;
   public leaveName: string;
   
+  constructor(init?: Partial<OfficerForm>) {
+    Object.assign(this, init);
+  }
 }

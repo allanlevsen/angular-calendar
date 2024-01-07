@@ -5,11 +5,10 @@ import { LeaveStylingService } from "src/app/shared/services/leave-styling.servi
 
 export class LeaveTypeToViewModelMapper implements IMapper<LeaveType, LeaveTypeViewModel> {
 
-  constructor(private leaveStylingService: LeaveStylingService) {}
+  constructor(private leaveStylingService: LeaveStylingService) { }
 
   map(input: LeaveType): LeaveTypeViewModel {
     return new LeaveTypeViewModel({
-
       id: input.id,
       name: input.name,
       code: input.code,
@@ -21,7 +20,7 @@ export class LeaveTypeToViewModelMapper implements IMapper<LeaveType, LeaveTypeV
 
 export class ViewModelToLeaveTypeMapper implements IMapper<LeaveTypeViewModel, LeaveType> {
 
-  constructor( private leaveStylingService: LeaveStylingService) {}
+  constructor(private leaveStylingService: LeaveStylingService) { }
 
   map(input: LeaveTypeViewModel): LeaveType {
     return new LeaveType({
@@ -30,6 +29,6 @@ export class ViewModelToLeaveTypeMapper implements IMapper<LeaveTypeViewModel, L
       code: input.code,
       description: input.description,
       backgroundColor: this.leaveStylingService.getBackgroundColor(input.code)
-  });
+    });
   }
 }

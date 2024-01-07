@@ -20,5 +20,4 @@ export class OfficerLeave {
   constructor(init?: Partial<OfficerLeave>) {
     Object.assign(this, init);
   }
-
 }

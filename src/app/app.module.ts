@@ -9,8 +9,6 @@ import { OfficerScheduleComponent } from './officer-schedule/officer-schedule.co
 import { ContainsStringDirective } from './shared/directives/custom-validators/contains-string.directive';
 import { OfficerBulkEntryComponent } from './officer-bulk-entry/officer-bulk-entry.component';
 import { SchedulingService } from './shared/services/scheduling.service';
-import { TwoMonthCalendarComponent } from './two-month-calendar/two-month-calendar.component';
-
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MockBackendInterceptor } from './shared/services/mock-backend-interceptor.service';
 import { ApiService } from './shared/services/api.service';
@@ -18,15 +16,13 @@ import { PersonRepositoryService } from './shared/services/person-repository.ser
 import { AutoMapperService } from './shared/services/auto-mapper.service';
 import { LeaveStylingService } from './shared/services/leave-styling.service';
 
-
 @NgModule({
   declarations: [
     AppComponent,
     CalendarComponent,
     OfficerScheduleComponent,
     ContainsStringDirective,
-    OfficerBulkEntryComponent,
-    TwoMonthCalendarComponent
+    OfficerBulkEntryComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,3 @@
-
-
 export class LeaveViewModel {
 
    public isValid: boolean;
@@ -9,10 +7,8 @@ export class LeaveViewModel {
    public endDate: Date;
    public leaveCode: string;
    public leaveName: string;
- 
+
    constructor(init?: Partial<LeaveViewModel>) {
-     Object.assign(this, init);
+      Object.assign(this, init);
    }
- 
- }
- 
+}

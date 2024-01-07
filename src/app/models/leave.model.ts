@@ -1,5 +1,3 @@
-
-
 export class Leave {
 
   public leaveId: number;
@@ -12,5 +10,4 @@ export class Leave {
   constructor(init?: Partial<Leave>) {
     Object.assign(this, init);
   }
-
 }

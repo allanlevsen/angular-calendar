@@ -12,7 +12,6 @@ export class Officer {
   constructor(init?: Partial<Officer>) {
     Object.assign(this, init);
   }
-
 }
 
 

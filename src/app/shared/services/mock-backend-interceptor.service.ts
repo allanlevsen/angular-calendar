@@ -31,8 +31,8 @@ export class MockBackendInterceptor implements HttpInterceptor {
 
    
    private persons: Person[] = [
-      new Person(1, 'John', 'Doe', new Date('1990-01-01'), 'john.doe@example.com'),
-      new Person(2, 'Jane', 'Doe', new Date('1991-02-01'), 'jane.doe@example.com')
+      new Person({ personId: 1, firstName: 'John', lastName: 'Doe', birthDate: new Date('1990-01-01'), emailAddress: 'john.doe@example.com'}),
+      new Person({ personId: 2, firstName: 'Jane', lastName: 'Doe', birthDate: new Date('1991-02-01'), emailAddress: 'jane.doe@example.com'})
       // ... other mock persons
    ];
 

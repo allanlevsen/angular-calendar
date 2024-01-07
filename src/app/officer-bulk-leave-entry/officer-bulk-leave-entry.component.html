@@ -77,8 +77,10 @@
                         (click)="onShowAddLeaveForm(officerIndex)"></i></td>
                   <td class="action-icon"><i class="fa-regular fa-square-minus" title="Remove Leave"
                         (click)="onRemoveLeave(officer.id, leaveIndex)"></i></td>
+                  <!-- Delete functionality not required
                   <td class="action-icon padding-right"><i *ngIf="isFirst" class="fa-regular fa-trash-can" title="Delete Officer"
                         (click)="onDeleteClick(officer.id)"></i></td>
+                  -->
                </tr>
                <tr *ngIf="!isEditing(officer.id, leaveIndex) && isShowCalendar(officer.id, leaveIndex)">
                   <td colspan="3"></td>
@@ -125,8 +127,10 @@
                <td class="action-icon"><i class="fa-regular fa-square-plus" title="Add Leave"
                      (click)="onShowAddLeaveForm(officerIndex)"></i></td>
                <td class="action-icon"></td>
+               <!-- delete officer functionality not required
                <td class="action-icon padding-right"><i class="fa-regular fa-trash-can" title="Delete Officer"
                      (click)="onDeleteClick(officer.id)"></i></td>
+               -->
             </tr>
 
             <!-- Inline form for adding a new leave -->

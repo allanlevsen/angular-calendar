@@ -6,6 +6,9 @@ import { OfficerLeave } from "../models/officer-leave.model";
 import { SchedulingService } from '../shared/services/scheduling.service';
 import { LeaveTypeViewModel } from '../models/leave-type-viewModel.model';
 import { LeaveType } from '../models/leave-type.model';
+import { LookupDataService } from '../shared/services/lookup-data.service';
+import { LookupKey } from '../models/look-keys.model';
+import { StorageService } from '../shared/services/storage.service';
 
 
 @Component({
@@ -17,16 +20,21 @@ export class OfficerBulkLeaveEntryComponent implements OnInit {
 
   // various types, constants, array data
   //
-  officers: Officer[] = [
-    // new Officer({id: 1, agency: "Agency1", badgeNumber: "BN001", firstName: "John", lastName: "Doe", leaves: []}),
-    // new Officer({2, "Agency2", "BN002", "Jane", "Smith", [
-    //   new Leave(2, new Date("2023-01-01"), new Date("2023-01-10"), "F", "First Watch")
-    // ]}),
-    // new Officer({3, "Agency3", "BN003", "Alice", "Johnson", [
-    //   new Leave(3, new Date("2023-02-01"), new Date("2023-02-05"), "S", "Second Watch"),
-    //   new Leave(3, new Date("2023-03-01"), new Date("2023-03-10"), "H", "Holiday")
-    // ]})
-  ];
+  officers: Officer[] = [];
+
+  // development sttic data
+  //
+  // officers: Officer[] = [
+  //   new Officer({id: 1, agency: "EPS", badgeNumber: "7826732", firstName: "John", lastName: "Doe", leaves: []}),
+  //   new Officer({id: 2, agency: "CPS", badgeNumber: "9873466", firstName: "Jane", lastName: "Smith", leaves: [
+  //     new Leave({leaveId: 1, officerId: 2, startDate: new Date("2023-01-01"), endDate: new Date("2023-01-10"), leaveCode: "F", leaveName: "First Watch"})
+  //   ]}),
+  //   new Officer({id: 3, agency: "CPS", badgeNumber: "3456748", firstName: "Alan", lastName: "Anderson", leaves: [
+  //     new Leave({leaveId: 2, officerId: 3, startDate: new Date("2023-01-01"), endDate: new Date("2023-01-10"), leaveCode: "F", leaveName: "First Watch"}),
+  //     new Leave({leaveId: 3, officerId: 3, startDate: new Date("2023-01-15"), endDate: new Date("2023-01-19"), leaveCode: "H", leaveName: "Holiday"}),
+  //     new Leave({leaveId: 4, officerId: 3, startDate: new Date("2023-01-22"), endDate: new Date("2023-02-03"), leaveCode: "C", leaveName: "Course"})
+  //   ]})
+  // ];
 
   leaveTypes: LeaveTypeViewModel[];
 
@@ -46,21 +54,23 @@ export class OfficerBulkLeaveEntryComponent implements OnInit {
   editingOfficerId: number | null = null;
   editingLeaveIndex: number | null = null;
   
-  constructor(private schedulingService: SchedulingService) {
+  constructor(private schedulingService: SchedulingService, 
+    private storageStorage: StorageService,
+    private lookupService: LookupDataService) {
   }
 
   ngOnInit(): void {
-    this.schedulingService.getLeaveTypes().subscribe( leaveTypes => {
-      this.leaveTypes = leaveTypes;
+
+    this.storageStorage.get(LookupKey.LEAVE_TYPE).subscribe(lookupData => {
+      this.leaveTypes = lookupData as LeaveTypeViewModel[];
 
       // add a select Leave Type into the first item of the array
       // New LeaveType object to add
       let selectLeaveType = new LeaveType({id: 0, name: 'Select Type', code: '', description: 'Empty Leave Type', backgroundColor: null});
 
       // Add the new LeaveType to the beginning of the array
-      leaveTypes.unshift(selectLeaveType);
+      this.leaveTypes.unshift(selectLeaveType);
       this.officerLeave.leaveTypeName = 'Select Type';
-
     });
   }
 
@@ -110,9 +120,11 @@ export class OfficerBulkLeaveEntryComponent implements OnInit {
   }
 
 
-  onDeleteClick(officerId: number): void {
-    this.deleteOfficerById(officerId);
-  }
+  // delete officer functionality not required
+  //
+  // onDeleteClick(officerId: number): void {
+  //   this.deleteOfficerById(officerId);
+  // }
 
   onShowAddLeaveForm(index: number): void {
     this.activeOfficerIndex = index;

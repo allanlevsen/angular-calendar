@@ -7,7 +7,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { FormsModule } from '@angular/forms';
 import { OfficerScheduleComponent } from './officer-schedule/officer-schedule.component';
 import { ContainsStringDirective } from './shared/directives/custom-validators/contains-string.directive';
-import { OfficerBulkEntryComponent } from './officer-bulk-leave-entry/officer-bulk-leave-entry.component';
+import { OfficerBulkLeaveEntryComponent } from './officer-bulk-leave-entry/officer-bulk-leave-entry.component';
 import { SchedulingService } from './shared/services/scheduling.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MockBackendInterceptor } from './shared/services/mock-backend-interceptor.service';
@@ -22,7 +22,7 @@ import { LeaveStylingService } from './shared/services/leave-styling.service';
     CalendarComponent,
     OfficerScheduleComponent,
     ContainsStringDirective,
-    OfficerBulkEntryComponent
+    OfficerBulkLeaveEntryComponent
   ],
   imports: [
     BrowserModule,

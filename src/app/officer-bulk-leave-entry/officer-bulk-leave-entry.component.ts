@@ -13,7 +13,7 @@ import { LeaveType } from '../models/leave-type.model';
   templateUrl: './officer-bulk-leave-entry.component.html',
   styleUrls: ['./officer-bulk-leave-entry.component.css']
 })
-export class OfficerBulkEntryComponent implements OnInit {
+export class OfficerBulkLeaveEntryComponent implements OnInit {
 
   // various types, constants, array data
   //

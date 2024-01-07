@@ -33,47 +33,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-
-      let officer: Officer = new Officer({
-        id: 1,
-        agency: "EPS",
-        badgeNumber: "123",
-        firstName: "Allan",
-        lastName: "Levsen",
-        leaves: []
-    });
-    // OR we can do this
-    //
-    // let officer = {
-    //   id: 1,
-    //   agency: "EPS",
-    //   badgeNumber: "123",
-    //   firstName: "Allan",
-    //   lastName: "Levsen",
-    //   leaves: []
-    // } as Officer;
-
-     var profile = this.autoMapper.map(officer, OfficerViewModel) as OfficerViewModel;
-     console.log(profile);
-
-     
-    let officerLeave: OfficerLeave = new OfficerLeave({
-      officerLeaveId: 0,
-      officerId: 1,
-      firstName: "Allan",
-      lastName: "Levsen",
-      badgeNumber: "12345689",
-      agencyId: 1,
-      agency: "EPS",
-      startDate: new Date(),
-      endDate: new Date(),
-      leaveTypeId: 1,
-      leaveTypeCode: 'F',
-      leaveTypeName: 'First Watch'
-    });
-
-    var leave = this.autoMapper.map(officerLeave, OfficerLeave) as OfficerLeave
-    console.log(leave);
   }
 
   registerAutomapperTypes() {

@@ -19,6 +19,24 @@ export class PersonRepositoryService {
       );
    }
 
+   // The example below is kept just as an example of error handling
+   //
+   // getPerson(personId: number): void {
+   //    this.apiService.get<Person>(`persons/${personId}`).subscribe(
+   //       person => {
+   //          console.log('Person data:', person);
+   //       },
+   //       error => {
+   //          if (error.errorMessage.includes('timed out')) {
+   //             console.error('Request timed out:', error.errorMessage);
+   //          } else {
+   //             console.error('An error occurred:', error.errorMessage);
+   //          }
+   //       }
+   //    );
+   // }
+
+
    getPersons(): Observable<PersonViewModel[]> {
       return this.apiService.get<Person[]>('persons').pipe(
          map(persons => persons.map(person => this.autoMapperService.map(person, PersonViewModel) as PersonViewModel))
@@ -44,5 +62,6 @@ export class PersonRepositoryService {
          map(person => this.autoMapperService.map(person, PersonViewModel) as PersonViewModel)
       );
    }
+
 
 }

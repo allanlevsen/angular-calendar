@@ -79,7 +79,7 @@ export class OfficerBulkLeaveEntryComponent implements OnInit {
   // UI Events
   //
 
-  onSubmit() { 
+  onAddOfficerSubmit() { 
     this.submitted = true; 
 
     const badgeNumbersArray = this.officerLeave.badgeNumber.split(',').map(num => num.trim());

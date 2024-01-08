@@ -93,8 +93,8 @@ export class SchedulingService {
   // Mostly, the following is code for the prototype interface
   // Generating id numbers, creating officers and leaves etc
   //
-
-
+  // This will not be needed in the JOIN2 application code
+  //
 
   public getGeneratedId(): number {
 
@@ -109,66 +109,6 @@ export class SchedulingService {
 
     // Convert milliseconds to seconds
     return Math.floor(diff / 1000);
-  }
-
-
-
-  // examples using the generic api service
-  //
-
-  // the following code, however, is not required in JOIN 2
-  // and should be deleted
-
-  // Get a person by ID
-  getPerson(personId: number): void {
-    this.apiService.get<Person>(`persons/${personId}`).subscribe(
-      person => {
-        console.log('Person data:', person);
-      },
-      error => {
-        if (error.errorMessage.includes('timed out')) {
-          console.error('Request timed out:', error.errorMessage);
-        } else {
-          console.error('An error occurred:', error.errorMessage);
-        }
-      }
-    );
-  }
-
-  // Add a new person
-  addPerson(newPerson: Person): void {
-    this.apiService.post<Person>('persons', newPerson).subscribe(
-      person => {
-        console.log('Person added:', person);
-      },
-      error => {
-        console.error('An error occurred:', error.errorMessage);
-      }
-    );
-  }
-
-  // Update a person's details
-  updatePerson(personId: number, updatedPersonData: Person): void {
-    this.apiService.put<Person>(`persons/${personId}`, updatedPersonData).subscribe(
-      person => {
-        console.log('Person updated:', person);
-      },
-      error => {
-        console.error('An error occurred:', error.errorMessage);
-      }
-    );
-  }
-
-  // Delete a person by ID
-  deletePerson(personId: number): void {
-    this.apiService.delete<any>(`persons/${personId}`).subscribe(
-      response => {
-        console.log('Person deleted:', response);
-      },
-      error => {
-        console.error('An error occurred:', error.errorMessage);
-      }
-    );
   }
 
 }
